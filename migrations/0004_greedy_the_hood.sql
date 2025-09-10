@@ -1,0 +1,1 @@
+DROP INDEX `taccounts_name_unique`;

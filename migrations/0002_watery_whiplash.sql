@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `taccounts_name_unique` ON `taccounts` (`name`);
