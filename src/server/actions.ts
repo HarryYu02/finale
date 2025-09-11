@@ -9,7 +9,7 @@ type InsertTransaction = typeof transactions.$inferInsert;
 type InsertEntry = typeof entries.$inferInsert;
 
 export const addTAccountAction = action(
-  async (data: Pick<InsertTAccount, "type" | "name">) => {
+  async (data: Pick<InsertTAccount, "type" | "name" | "amount">) => {
     "use server";
     const session = await assertSession();
     const parsed: InsertTAccount = {
@@ -18,6 +18,7 @@ export const addTAccountAction = action(
       normalSide:
         data.type === "asset" || data.type === "expense" ? "dr" : "cr",
       userId: session.user.id,
+      amount: data.amount,
     };
     const res = await db.insert(taccounts).values(parsed).returning();
     return res;

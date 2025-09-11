@@ -9,6 +9,14 @@ import { capitalize } from "@/lib/utils";
 import { addTAccountAction } from "@/server/actions";
 import { Button } from "./ui/button";
 import {
+  NumberField,
+  NumberFieldDecrementTrigger,
+  NumberFieldGroup,
+  NumberFieldIncrementTrigger,
+  NumberFieldInput,
+  NumberFieldLabel,
+} from "./ui/number-field";
+import {
   Select,
   SelectContent,
   SelectErrorMessage,
@@ -28,16 +36,19 @@ import { showToast } from "./ui/toast";
 const taccountInsertSchema = createInsertSchema(taccounts)
   .extend({
     name: z.string().min(2, "Account name has to be longer than 2 characters."),
+    amount: z.number().min(0),
   })
   .pick({
     name: true,
     type: true,
+    amount: true,
   });
 type InsertFormSchemaType = z.infer<typeof taccountInsertSchema>;
 
 const defaultTAccount: InsertFormSchemaType = {
   name: "",
   type: "asset",
+  amount: 0,
 };
 
 const AddTAccountForm: Component = () => {
@@ -47,7 +58,10 @@ const AddTAccountForm: Component = () => {
     defaultValues: defaultTAccount,
     onSubmit: async ({ value }) => {
       console.log(value);
-      const inserted = await addAccount(value);
+      const inserted = await addAccount({
+        ...value,
+        amount: value.amount * 100,
+      });
       if (inserted) {
         showToast({ title: "Account added", variant: "success" });
         form.reset();
@@ -124,6 +138,42 @@ const AddTAccountForm: Component = () => {
                 {field().state.meta.errors[0]?.message}
               </SelectErrorMessage>
             </Select>
+          )}
+        </form.Field>
+        <form.Field name="amount">
+          {(field) => (
+            <NumberField
+              class="flex flex-col gap-2"
+              validationState={
+                field().state.meta.errors &&
+                field().state.meta.errors.length === 0
+                  ? "valid"
+                  : "invalid"
+              }
+              name={field().name}
+              rawValue={field().state.value}
+              onBlur={field().handleBlur}
+              onRawValueChange={field().handleChange}
+              required
+              minValue={0}
+              step={0.01}
+              inputMode="decimal"
+              format
+              formatOptions={{
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }}
+            >
+              <NumberFieldLabel>Initial balabce</NumberFieldLabel>
+              <div class="flex items-center gap-2">
+                <span>$</span>
+                <NumberFieldGroup>
+                  <NumberFieldInput />
+                  <NumberFieldIncrementTrigger />
+                  <NumberFieldDecrementTrigger />
+                </NumberFieldGroup>
+              </div>
+            </NumberField>
           )}
         </form.Field>
       </div>

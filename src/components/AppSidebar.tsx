@@ -24,8 +24,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { authClient, type User } from "@/lib/auth-client";
-import { showToast } from "./ui/toast";
 import { ModeToggle } from "./ModeToggle";
+import { showToast } from "./ui/toast";
 
 const items = [
   {
@@ -63,7 +63,9 @@ export const AppSidebar: Component<{
                       src={props.user?.image ?? ""}
                       alt={props.user?.name ?? ""}
                     />
-                    <AvatarFallback class="rounded-lg">CN</AvatarFallback>
+                    <AvatarFallback class="rounded-lg">
+                      {props.user?.name.charAt(0)}
+                    </AvatarFallback>
                   </Avatar>
                   <div class="grid flex-1 text-left text-sm leading-tight">
                     <span class="truncate font-medium">{props.user?.name}</span>
@@ -79,7 +81,9 @@ export const AppSidebar: Component<{
                           src={props.user?.image ?? ""}
                           alt={props.user?.name ?? ""}
                         />
-                        <AvatarFallback class="rounded-lg">CN</AvatarFallback>
+                        <AvatarFallback class="rounded-lg">
+                          {props.user?.name.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                       <div class="grid flex-1 text-left text-sm leading-tight">
                         <span class="truncate font-medium">
