@@ -89,7 +89,7 @@ const Transactions: Component = () => {
                     <li>
                       {entry.account?.name}{" "}
                       {entry.account?.normalSide === entry.side ? "+" : "-"}
-                      {entry.amount}
+                      {entry.amount / 100}
                     </li>
                   )}
                 </For>

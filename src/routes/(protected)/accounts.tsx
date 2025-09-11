@@ -47,7 +47,7 @@ const Accounts: Component = () => {
                   <div class="flex w-full items-center justify-between">
                     <span>{capitalize(acType)}</span>
                     <Show when={expanded()[0] !== acType}>
-                      <span>${amountInType()}</span>
+                      <span>${amountInType() / 100}</span>
                     </Show>
                   </div>
                 </AccordionTrigger>
@@ -56,7 +56,7 @@ const Accounts: Component = () => {
                     {(acInType) => (
                       <div class="flex w-full items-center justify-between">
                         <span>{acInType.name}</span>
-                        <span>${acInType.amount}</span>
+                        <span>${acInType.amount / 100}</span>
                       </div>
                     )}
                   </For>

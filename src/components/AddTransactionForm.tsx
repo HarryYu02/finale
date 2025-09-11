@@ -17,6 +17,14 @@ import {
   ComboboxTrigger,
 } from "./ui/combobox";
 import {
+  NumberField,
+  NumberFieldDecrementTrigger,
+  NumberFieldErrorMessage,
+  NumberFieldGroup,
+  NumberFieldIncrementTrigger,
+  NumberFieldInput,
+} from "./ui/number-field";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -33,10 +41,14 @@ import {
 
 const transactionInsertSchema = createInsertSchema(transactions);
 const entryInsertSchema = createInsertSchema(entries);
-const formEntrySchema = entryInsertSchema.pick({
-  taccountId: true,
-  amount: true,
-});
+const formEntrySchema = entryInsertSchema
+  .pick({
+    taccountId: true,
+    amount: true,
+  })
+  .extend({
+    amount: z.float32(),
+  });
 const formSchema = transactionInsertSchema
   .pick({
     date: true,
@@ -92,7 +104,7 @@ const AddTransactionForm: Component<{
         if (!ac) return;
         const amount = value.from[i].amount;
         await addEntry({
-          amount: amount,
+          amount: amount * 100,
           transactionId: transactionId,
           taccountId: ac.id,
           side: "cr",
@@ -103,7 +115,7 @@ const AddTransactionForm: Component<{
         if (!ac) return;
         const amount = value.to[i].amount;
         await addEntry({
-          amount: amount,
+          amount: amount * 100,
           transactionId: transactionId,
           taccountId: ac.id,
           side: "dr",
@@ -181,7 +193,7 @@ const AddTransactionForm: Component<{
               <Show when={field().state.value.length > 0}>
                 <Index each={field().state.value}>
                   {(_, i) => (
-                    <div class="flex gap-2">
+                    <div class="flex items-center gap-2">
                       <form.Field name={`from[${i}].taccountId`}>
                         {(subField) => (
                           <Select
@@ -215,28 +227,39 @@ const AddTransactionForm: Component<{
                           </Select>
                         )}
                       </form.Field>
+                      <span>$</span>
                       <form.Field name={`from[${i}].amount`}>
                         {(subField) => (
-                          <TextField
-                            class=""
+                          <NumberField
+                            class="flex flex-col gap-2"
                             validationState={
                               field().state.meta.errors.length === 0
                                 ? "valid"
                                 : "invalid"
                             }
                             name={subField().name}
-                            value={subField().state.value.toString()}
+                            rawValue={subField().state.value}
                             onBlur={subField().handleBlur}
-                            onChange={(value) =>
-                              subField().handleChange(Number(value))
-                            }
+                            onRawValueChange={subField().handleChange}
                             required
+                            minValue={0}
+                            step={0.01}
+                            inputMode="decimal"
+                            format
+                            formatOptions={{
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }}
                           >
-                            <TextFieldInput type="number" />
-                            <TextFieldErrorMessage>
+                            <NumberFieldGroup>
+                              <NumberFieldInput />
+                              <NumberFieldIncrementTrigger />
+                              <NumberFieldDecrementTrigger />
+                            </NumberFieldGroup>
+                            <NumberFieldErrorMessage>
                               {subField().state.meta.errors[0]?.message}
-                            </TextFieldErrorMessage>
-                          </TextField>
+                            </NumberFieldErrorMessage>
+                          </NumberField>
                         )}
                       </form.Field>
                     </div>
@@ -266,7 +289,7 @@ const AddTransactionForm: Component<{
               <Show when={field().state.value.length > 0}>
                 <Index each={field().state.value}>
                   {(_, i) => (
-                    <div class="flex gap-2">
+                    <div class="flex items-center gap-2">
                       <form.Field name={`to[${i}].taccountId`}>
                         {(subField) => (
                           <Select
@@ -300,28 +323,39 @@ const AddTransactionForm: Component<{
                           </Select>
                         )}
                       </form.Field>
+                      <span>$</span>
                       <form.Field name={`to[${i}].amount`}>
                         {(subField) => (
-                          <TextField
-                            class=""
+                          <NumberField
+                            class="flex flex-col gap-2"
                             validationState={
                               field().state.meta.errors.length === 0
                                 ? "valid"
                                 : "invalid"
                             }
                             name={subField().name}
-                            value={subField().state.value.toString()}
+                            rawValue={subField().state.value}
                             onBlur={subField().handleBlur}
-                            onChange={(value) =>
-                              subField().handleChange(Number(value))
-                            }
+                            onRawValueChange={subField().handleChange}
                             required
+                            minValue={0}
+                            step={0.01}
+                            inputMode="decimal"
+                            format
+                            formatOptions={{
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }}
                           >
-                            <TextFieldInput type="number" />
-                            <TextFieldErrorMessage>
+                            <NumberFieldGroup>
+                              <NumberFieldInput />
+                              <NumberFieldIncrementTrigger />
+                              <NumberFieldDecrementTrigger />
+                            </NumberFieldGroup>
+                            <NumberFieldErrorMessage>
                               {subField().state.meta.errors[0]?.message}
-                            </TextFieldErrorMessage>
-                          </TextField>
+                            </NumberFieldErrorMessage>
+                          </NumberField>
                         )}
                       </form.Field>
                     </div>
