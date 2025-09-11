@@ -44,6 +44,20 @@ const Transactions: Component = () => {
     ).filter((t) => t !== null);
   };
 
+  const userTransactionsByDate = () => {
+    const transactionsMap: Map<
+      string,
+      ReturnType<typeof userTransactions>
+    > = new Map();
+    userTransactions().forEach((t) => {
+      const prev = transactionsMap.get(t.meta.date.toLocaleDateString()) ?? [];
+      transactionsMap.set(t.meta.date.toLocaleDateString(), [...prev, t]);
+    });
+    return Array.from(transactionsMap).toSorted((a, b) =>
+      new Date(a[0]) > new Date(b[0]) ? -1 : 1,
+    );
+  };
+
   const uniqueUserTransactionDescriptions = () => [
     ...new Set(userTransactions().map((t) => t.meta.description ?? "")),
   ];
@@ -64,36 +78,46 @@ const Transactions: Component = () => {
           </DialogContent>
         </Dialog>
       </div>
-      <For each={userTransactions()} fallback={"No transactions"}>
+      <For each={userTransactionsByDate()}>
         {(transaction) => {
           return (
             <div>
-              <p>
-                <span>{transaction.meta.date.toLocaleDateString()}</span>{" "}
-                {transaction.meta.description}{" "}
-                <Button
-                  variant={"destructive"}
-                  onClick={async () => {
-                    const deleted = await deleteTransaction(
-                      transaction.meta.id,
-                    );
-                    console.info(deleted);
-                  }}
-                >
-                  -
-                </Button>
-              </p>
-              <ul class="list-disc pl-8">
-                <For each={transaction.entries}>
-                  {(entry) => (
-                    <li>
-                      {entry.account?.name}{" "}
-                      {entry.account?.normalSide === entry.side ? "+" : "-"}
-                      {entry.amount / 100}
-                    </li>
-                  )}
-                </For>
-              </ul>
+              <p class="font-bold">{transaction[0]}</p>
+              <For each={transaction[1]} fallback={"No transactions"}>
+                {(transactionInDate) => {
+                  return (
+                    <div>
+                      <p>
+                        {transactionInDate.meta.description ?? "N/A"}{" "}
+                        <Button
+                          variant={"destructive"}
+                          onClick={async () => {
+                            const deleted = await deleteTransaction(
+                              transactionInDate.meta.id,
+                            );
+                            console.info(deleted);
+                          }}
+                        >
+                          -
+                        </Button>
+                      </p>
+                      <ul class="list-disc pl-8">
+                        <For each={transactionInDate.entries}>
+                          {(entry) => (
+                            <li>
+                              {entry.account?.name}{" "}
+                              {entry.account?.normalSide === entry.side
+                                ? "+"
+                                : "-"}
+                              {entry.amount / 100}
+                            </li>
+                          )}
+                        </For>
+                      </ul>
+                    </div>
+                  );
+                }}
+              </For>
             </div>
           );
         }}

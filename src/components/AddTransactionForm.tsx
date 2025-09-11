@@ -90,15 +90,14 @@ const AddTransactionForm: Component<{
     defaultValues,
     onSubmit: async ({ value }) => {
       console.log(value);
+      return;
       const insertedTransactions = await addTransaction({
         date: value.date,
         description: value.description,
       });
-      if (insertedTransactions.length === 0) {
-        // TODO: remove inserted transaction
-        return;
-      }
+      if (insertedTransactions.length === 0) return;
       const transactionId = insertedTransactions[0].id;
+      // FIXME: validate entries
       for (let i = 0; i < value.from.length; ++i) {
         const ac = accountsMap().get(value.from[i].taccountId);
         if (!ac) return;
@@ -148,7 +147,10 @@ const AddTransactionForm: Component<{
               name={field().name}
               value={field().state.value.toLocaleDateString()}
               onBlur={field().handleBlur}
-              onChange={(value) => field().handleChange(new Date(value))}
+              onChange={(value) => {
+                const [year, month, day] = value.split("-").map(Number);
+                return field().handleChange(new Date(year, month - 1, day));
+              }}
             >
               <TextFieldLabel class="">Date</TextFieldLabel>
               <TextFieldInput type="date" />
@@ -176,7 +178,10 @@ const AddTransactionForm: Component<{
               name={field().name}
               value={field().state.value ?? ""}
               onBlur={field().handleBlur}
-              onChange={(value) => field().handleChange(value)}
+              onChange={(value) => {
+                console.info(value ?? "NULL");
+                return field().handleChange(value);
+              }}
             >
               <ComboboxControl aria-label="Transaction description">
                 <ComboboxInput />
