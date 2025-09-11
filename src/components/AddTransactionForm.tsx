@@ -90,7 +90,6 @@ const AddTransactionForm: Component<{
     defaultValues,
     onSubmit: async ({ value }) => {
       console.log(value);
-      return;
       const insertedTransactions = await addTransaction({
         date: value.date,
         description: value.description,
@@ -165,7 +164,9 @@ const AddTransactionForm: Component<{
             <Combobox
               class=""
               placeholder="Search for a description"
-              options={props.transactionsDesc}
+              options={[
+                ...new Set([...props.transactionsDesc, field().state.value]),
+              ]}
               itemComponent={(props) => (
                 <ComboboxItem item={props.item}>
                   <ComboboxItemLabel>{props.item.rawValue}</ComboboxItemLabel>
@@ -176,11 +177,11 @@ const AddTransactionForm: Component<{
                 field().state.meta.errors.length === 0 ? "valid" : "invalid"
               }
               name={field().name}
-              value={field().state.value ?? ""}
+              value={field().state.value}
               onBlur={field().handleBlur}
-              onChange={(value) => {
-                console.info(value ?? "NULL");
-                return field().handleChange(value);
+              onChange={(v) => field().handleChange(v)}
+              onInputChange={(v) => {
+                field().handleChange(v);
               }}
             >
               <ComboboxControl aria-label="Transaction description">
