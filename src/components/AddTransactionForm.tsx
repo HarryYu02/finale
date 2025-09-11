@@ -19,7 +19,6 @@ import {
 import {
   NumberField,
   NumberFieldDecrementTrigger,
-  NumberFieldErrorMessage,
   NumberFieldGroup,
   NumberFieldIncrementTrigger,
   NumberFieldInput,
@@ -47,7 +46,7 @@ const formEntrySchema = entryInsertSchema
     amount: true,
   })
   .extend({
-    amount: z.float32(),
+    amount: z.number().gte(0.01, { error: "How much?" }),
   });
 const formSchema = transactionInsertSchema
   .pick({
@@ -55,9 +54,18 @@ const formSchema = transactionInsertSchema
     description: true,
   })
   .extend({
-    from: z.array(formEntrySchema),
-    to: z.array(formEntrySchema),
-  });
+    from: z.array(formEntrySchema).min(1, { error: "From where?" }),
+    to: z.array(formEntrySchema).min(1, { error: "To where?" }),
+  })
+  .refine(
+    (v) => {
+      const sumFrom = v.from.reduce((sum, cur) => sum + cur.amount, 0);
+      const sumTo = v.to.reduce((sum, cur) => sum + cur.amount, 0);
+      if (sumFrom !== sumTo) return false;
+      return true;
+    },
+    { error: "The amount of 'from' and 'to' does't add up." },
+  );
 type FormSchemaType = z.infer<typeof formSchema>;
 
 const defaultValues: FormSchemaType = {
@@ -96,7 +104,6 @@ const AddTransactionForm: Component<{
       });
       if (insertedTransactions.length === 0) return;
       const transactionId = insertedTransactions[0].id;
-      // FIXME: validate entries
       for (let i = 0; i < value.from.length; ++i) {
         const ac = accountsMap().get(value.from[i].taccountId);
         if (!ac) return;
@@ -196,6 +203,16 @@ const AddTransactionForm: Component<{
         <form.Field name="from">
           {(field) => (
             <div class="flex flex-col gap-4">
+              <Show
+                when={
+                  field().state.meta.errors &&
+                  field().state.meta.errors.length > 0
+                }
+              >
+                <p class="text-error-foreground text-xs">
+                  {field().state.meta.errors?.[0]?.message}
+                </p>
+              </Show>
               <Show when={field().state.value.length > 0}>
                 <Index each={field().state.value}>
                   {(_, i) => (
@@ -204,6 +221,12 @@ const AddTransactionForm: Component<{
                         {(subField) => (
                           <Select
                             class=""
+                            validationState={
+                              subField().state.meta.errors &&
+                              subField().state.meta.errors.length === 0
+                                ? "valid"
+                                : "invalid"
+                            }
                             name={subField().name}
                             value={subField().state.value}
                             onBlur={subField().handleBlur}
@@ -239,7 +262,8 @@ const AddTransactionForm: Component<{
                           <NumberField
                             class="flex flex-col gap-2"
                             validationState={
-                              field().state.meta.errors.length === 0
+                              subField().state.meta.errors &&
+                              subField().state.meta.errors.length === 0
                                 ? "valid"
                                 : "invalid"
                             }
@@ -262,9 +286,6 @@ const AddTransactionForm: Component<{
                               <NumberFieldIncrementTrigger />
                               <NumberFieldDecrementTrigger />
                             </NumberFieldGroup>
-                            <NumberFieldErrorMessage>
-                              {subField().state.meta.errors[0]?.message}
-                            </NumberFieldErrorMessage>
                           </NumberField>
                         )}
                       </form.Field>
@@ -292,6 +313,16 @@ const AddTransactionForm: Component<{
         <form.Field name="to">
           {(field) => (
             <div class="flex flex-col gap-4">
+              <Show
+                when={
+                  field().state.meta.errors &&
+                  field().state.meta.errors.length > 0
+                }
+              >
+                <p class="text-error-foreground text-xs">
+                  {field().state.meta.errors?.[0]?.message}
+                </p>
+              </Show>
               <Show when={field().state.value.length > 0}>
                 <Index each={field().state.value}>
                   {(_, i) => (
@@ -300,6 +331,12 @@ const AddTransactionForm: Component<{
                         {(subField) => (
                           <Select
                             class=""
+                            validationState={
+                              subField().state.meta.errors &&
+                              subField().state.meta.errors.length === 0
+                                ? "valid"
+                                : "invalid"
+                            }
                             name={subField().name}
                             value={subField().state.value}
                             onBlur={subField().handleBlur}
@@ -335,7 +372,8 @@ const AddTransactionForm: Component<{
                           <NumberField
                             class="flex flex-col gap-2"
                             validationState={
-                              field().state.meta.errors.length === 0
+                              subField().state.meta.errors &&
+                              subField().state.meta.errors.length === 0
                                 ? "valid"
                                 : "invalid"
                             }
@@ -358,9 +396,6 @@ const AddTransactionForm: Component<{
                               <NumberFieldIncrementTrigger />
                               <NumberFieldDecrementTrigger />
                             </NumberFieldGroup>
-                            <NumberFieldErrorMessage>
-                              {subField().state.meta.errors[0]?.message}
-                            </NumberFieldErrorMessage>
                           </NumberField>
                         )}
                       </form.Field>
