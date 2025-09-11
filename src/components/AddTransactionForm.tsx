@@ -95,7 +95,7 @@ const AddTransactionForm: Component<{
           amount: amount,
           transactionId: transactionId,
           taccountId: ac.id,
-          side: ac.normalSide === "dr" ? "cr" : "dr",
+          side: "cr",
         });
       }
       for (let i = 0; i < value.to.length; ++i) {
@@ -106,7 +106,7 @@ const AddTransactionForm: Component<{
           amount: amount,
           transactionId: transactionId,
           taccountId: ac.id,
-          side: ac.normalSide,
+          side: "dr",
         });
       }
       form.reset();

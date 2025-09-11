@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { accountTypes, sides } from "./enum";
+import { number } from "node_modules/zod/v4/core/regexes.cjs";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -84,6 +85,7 @@ export const taccounts = sqliteTable("taccounts", {
   name: text("name").notNull(),
   type: text("type", { enum: accountTypes }).notNull(),
   normalSide: text("normal_side", { enum: sides }).notNull(),
+  amount: integer("amount").default(0).notNull(),
   archived: integer("archived", { mode: "boolean" }).default(false).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .default(sql`CURRENT_TIMESTAMP`)

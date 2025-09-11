@@ -1,4 +1,4 @@
-import { createAsync } from "@solidjs/router";
+import { createAsync, useAction } from "@solidjs/router";
 import { type Component, For } from "solid-js";
 import AddTransactionForm from "@/components/AddTransactionForm";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { getAccounts, getEntries } from "@/server";
+import { deleteTransactionAction } from "@/server/actions";
 
 const Transactions: Component = () => {
+  const deleteTransaction = useAction(deleteTransactionAction);
   const userEntries = createAsync(() => getEntries(), {
     initialValue: [],
   });
@@ -68,7 +70,18 @@ const Transactions: Component = () => {
             <div>
               <p>
                 <span>{transaction.meta.date.toLocaleDateString()}</span>{" "}
-                {transaction.meta.description}
+                {transaction.meta.description}{" "}
+                <Button
+                  variant={"destructive"}
+                  onClick={async () => {
+                    const deleted = await deleteTransaction(
+                      transaction.meta.id,
+                    );
+                    console.info(deleted);
+                  }}
+                >
+                  -
+                </Button>
               </p>
               <ul class="list-disc pl-8">
                 <For each={transaction.entries}>

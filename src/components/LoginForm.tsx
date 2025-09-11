@@ -41,7 +41,7 @@ export const LoginForm: Component<ComponentProps<"div">> = (props) => {
               variant: "success",
             });
             form.reset();
-            navigate("/");
+            navigate("/dashboard");
           }
         }}
       >

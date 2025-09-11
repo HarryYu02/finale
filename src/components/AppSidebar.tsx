@@ -14,6 +14,10 @@ import type { User } from "@/lib/auth-client";
 
 const items = [
   {
+    title: "Dashboard",
+    url: "/dashboard",
+  },
+  {
     title: "Accounts",
     url: "/accounts",
   },
@@ -25,12 +29,12 @@ const items = [
 
 export const AppSidebar: Component<{
   user?: User;
-}> = () => {
+}> = (props) => {
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <For each={items}>
