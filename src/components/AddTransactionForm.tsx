@@ -61,8 +61,7 @@ const formSchema = transactionInsertSchema
     (v) => {
       const sumFrom = v.from.reduce((sum, cur) => sum + cur.amount, 0);
       const sumTo = v.to.reduce((sum, cur) => sum + cur.amount, 0);
-      if (sumFrom !== sumTo) return false;
-      return true;
+      return sumFrom === sumTo;
     },
     { error: "The amount of 'from' and 'to' does't add up." },
   );
@@ -167,37 +166,44 @@ const AddTransactionForm: Component<{
           )}
         </form.Field>
         <form.Field name="description">
-          {(field) => (
-            <Combobox
-              class=""
-              placeholder="Search for a description"
-              options={[
-                ...new Set([...props.transactionsDesc, field().state.value]),
-              ]}
-              itemComponent={(props) => (
-                <ComboboxItem item={props.item}>
-                  <ComboboxItemLabel>{props.item.rawValue}</ComboboxItemLabel>
-                  <ComboboxItemIndicator />
-                </ComboboxItem>
-              )}
-              validationState={
-                field().state.meta.errors.length === 0 ? "valid" : "invalid"
-              }
-              name={field().name}
-              value={field().state.value}
-              onBlur={field().handleBlur}
-              onChange={(v) => field().handleChange(v)}
-              onInputChange={(v) => {
-                field().handleChange(v);
-              }}
-            >
-              <ComboboxControl aria-label="Transaction description">
-                <ComboboxInput />
-                <ComboboxTrigger />
-              </ComboboxControl>
-              <ComboboxContent />
-            </Combobox>
-          )}
+          {(field) => {
+            const options = () => [
+              ...new Set(
+                field().state.value
+                  ? [...props.transactionsDesc, field().state.value]
+                  : props.transactionsDesc,
+              ),
+            ];
+            return (
+              <Combobox
+                class=""
+                placeholder="Search for a description"
+                options={options()}
+                itemComponent={(props) => (
+                  <ComboboxItem item={props.item}>
+                    <ComboboxItemLabel>{props.item.rawValue}</ComboboxItemLabel>
+                    <ComboboxItemIndicator />
+                  </ComboboxItem>
+                )}
+                validationState={
+                  field().state.meta.errors.length === 0 ? "valid" : "invalid"
+                }
+                name={field().name}
+                value={field().state.value}
+                onBlur={field().handleBlur}
+                onChange={(v) => field().handleChange(v)}
+                onInputChange={(v) => {
+                  field().handleChange(v);
+                }}
+              >
+                <ComboboxControl aria-label="Transaction description">
+                  <ComboboxInput />
+                  <ComboboxTrigger />
+                </ComboboxControl>
+                <ComboboxContent />
+              </Combobox>
+            );
+          }}
         </form.Field>
         <p>From</p>
         <form.Field name="from">

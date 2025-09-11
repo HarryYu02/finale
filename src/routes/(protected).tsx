@@ -43,7 +43,10 @@ const ProtectedLayout: ParentComponent = (props) => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem class="">
-                  <BreadcrumbLink current>{location.pathname}</BreadcrumbLink>
+                  <BreadcrumbLink current>
+                    {location.pathname.charAt(1).toUpperCase() +
+                      location.pathname.slice(2)}
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

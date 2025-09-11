@@ -52,7 +52,14 @@ const Accounts: Component = () => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <For each={accountsInType()}>
+                  <For
+                    each={accountsInType()}
+                    fallback={
+                      <div class="w-full text-center text-muted-foreground">
+                        No accounts
+                      </div>
+                    }
+                  >
                     {(acInType) => (
                       <div class="flex w-full items-center justify-between">
                         <span>{acInType.name}</span>
@@ -67,7 +74,9 @@ const Accounts: Component = () => {
         </For>
       </Accordion>
       <Dialog>
-        <DialogTrigger as={Button}>+ Add account</DialogTrigger>
+        <DialogTrigger as={Button} class="mx-auto mt-4 max-w-sm">
+          + Add account
+        </DialogTrigger>
         <DialogContent class="max-w-[90%]">
           <DialogHeader>
             <DialogTitle>Add an account</DialogTitle>
