@@ -26,7 +26,7 @@ const Root: ParentComponent = (props) => {
 
   return (
     <MetaProvider>
-      <Title>Solid Starter App</Title>
+      <Title>Finale ledger</Title>
       <ColorModeScript storageType={storageManager.type} />
       <ColorModeProvider storageManager={storageManager}>
         <Suspense>{props.children}</Suspense>

@@ -79,8 +79,8 @@ export const addEntryAction = action(async (data: InsertEntry) => {
     .set({
       amount: sql`
         CASE
-          WHEN ${taccounts.normalSide} = ${data.side} THEN ${taccounts.amount} + ${data.amount}
-          ELSE ${taccounts.amount} - ${data.amount}
+          WHEN ${taccounts.normalSide} = ${data.side} THEN ${taccounts.amount} + ${Math.round(data.amount)}
+          ELSE ${taccounts.amount} - ${Math.round(data.amount)}
         END
       `,
     })

@@ -1,5 +1,5 @@
 {
-  "name": "solidstart-full-template",
+  "name": "finale-ledger",
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",

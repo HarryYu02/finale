@@ -37,6 +37,7 @@ import {
   TextFieldInput,
   TextFieldLabel,
 } from "./ui/text-field";
+import { showToast } from "./ui/toast";
 
 const transactionInsertSchema = createInsertSchema(transactions);
 const entryInsertSchema = createInsertSchema(entries);
@@ -125,6 +126,7 @@ const AddTransactionForm: Component<{
           side: "dr",
         });
       }
+      showToast({ title: "Transaction added", variant: "success" });
       form.reset();
     },
     validators: {
