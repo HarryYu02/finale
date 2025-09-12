@@ -67,7 +67,7 @@ const DropdownMenuLabel: Component<ComponentProps<"div"> & { inset?: boolean }> 
   const [, rest] = splitProps(props, ["class", "inset"])
   return (
     <div
-      class={cn("px-2 py-1.5 text-sm font-semibold", props.inset && "pl-8", props.class)}
+      class={cn("px-2 py-1.5 font-semibold text-sm", props.inset && "pl-8", props.class)}
       {...rest}
     />
   )
@@ -137,7 +137,7 @@ const DropdownMenuSubContent = <T extends ValidComponent = "div">(
   return (
     <DropdownMenuPrimitive.SubContent
       class={cn(
-        "z-50 min-w-32 origin-[var(--kb-menu-content-transform-origin)] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in",
+        "z-50 min-w-32 origin-[var(--kb-menu-content-transform-origin)] animate-in overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
         props.class
       )}
       {...rest}
@@ -158,7 +158,7 @@ const DropdownMenuCheckboxItem = <T extends ValidComponent = "div">(
   return (
     <DropdownMenuPrimitive.CheckboxItem
       class={cn(
-        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         props.class
       )}
       {...rest}
@@ -195,7 +195,7 @@ const DropdownMenuGroupLabel = <T extends ValidComponent = "span">(
   const [, rest] = splitProps(props as DropdownMenuGroupLabelProps, ["class"])
   return (
     <DropdownMenuPrimitive.GroupLabel
-      class={cn("px-2 py-1.5 text-sm font-semibold", props.class)}
+      class={cn("px-2 py-1.5 font-semibold text-sm", props.class)}
       {...rest}
     />
   )
@@ -214,7 +214,7 @@ const DropdownMenuRadioItem = <T extends ValidComponent = "div">(
   return (
     <DropdownMenuPrimitive.RadioItem
       class={cn(
-        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         props.class
       )}
       {...rest}

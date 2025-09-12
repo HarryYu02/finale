@@ -77,7 +77,7 @@ const Accounts: Component = () => {
         <DialogTrigger as={Button} class="mx-auto mt-4 max-w-sm">
           + Add account
         </DialogTrigger>
-        <DialogContent class="max-w-[90%]">
+        <DialogContent class="max-h-[90%] w-md max-w-[90%]">
           <DialogHeader>
             <DialogTitle>Add an account</DialogTitle>
           </DialogHeader>

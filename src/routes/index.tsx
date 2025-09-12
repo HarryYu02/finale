@@ -39,6 +39,9 @@ export default function Home() {
           >
             Log out
           </Button>
+          <Button as={A} href="/dashboard">
+            Dashboard
+          </Button>
         </Show>
       </div>
     </main>

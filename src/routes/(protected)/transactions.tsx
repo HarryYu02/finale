@@ -10,9 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import { getAccounts, getEntries } from "@/server";
 import { deleteTransactionAction } from "@/server/actions";
-import { Separator } from "@/components/ui/separator";
 
 const Transactions: Component = () => {
   const deleteTransaction = useAction(deleteTransactionAction);
@@ -72,7 +72,7 @@ const Transactions: Component = () => {
     <div class="">
       <Dialog>
         <DialogTrigger as={Button}>+ Add transaction</DialogTrigger>
-        <DialogContent class="max-h-[90%] max-w-[90%]">
+        <DialogContent class="max-h-[90%] w-md max-w-[90%]">
           <DialogHeader>
             <DialogTitle>Add a transaction</DialogTitle>
           </DialogHeader>

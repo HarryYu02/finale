@@ -1,7 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { accountTypes, sides } from "./enum";
-import { number } from "node_modules/zod/v4/core/regexes.cjs";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
