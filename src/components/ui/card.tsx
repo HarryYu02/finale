@@ -43,19 +43,6 @@ const CardDescription: Component<ComponentProps<"p">> = (props) => {
   );
 };
 
-const CardAction: Component<ComponentProps<"p">> = (props) => {
-  const [local, others] = splitProps(props, ["class"]);
-  return (
-    <p
-      class={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-        local.class,
-      )}
-      {...others}
-    />
-  );
-};
-
 const CardContent: Component<ComponentProps<"div">> = (props) => {
   const [local, others] = splitProps(props, ["class"]);
   return <div class={cn("p-6 pt-0", local.class)} {...others} />;
@@ -74,6 +61,5 @@ export {
   CardFooter,
   CardTitle,
   CardDescription,
-  CardAction,
   CardContent,
 };

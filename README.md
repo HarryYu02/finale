@@ -1,6 +1,6 @@
 # Finale
 
-My double entry ledger for personal **fin**ance using journ**al** **e**ntries.
+My endgame double entry ledger for personal **fin**ance using journ**al** **e**ntries.
 
 > See what I did there?
 
@@ -10,6 +10,8 @@ I have always used a simple income/expense spreadsheet to track my finances.
 But there are some pain points that bothers me:
 
 - Hard to keep track of account transfers, including paying off cc bills etc..
+- Hard to keep track of bill spliting, should I classify it as a repayment?
+  So is it an income?
 - Adding an entry is extremely repetitive, later I use Google Sheet
   (Appscript) to automate it, but that introduce another problem.
 - I don't want to put my financial data on Google
@@ -22,9 +24,9 @@ or is paid (I am cheap). So I decided to make my own.
 The goals:
 
 1. Accurate
-2. Local
-3. Intuitive
-4. Minimal
+2. Intuitive
+3. Local
+4. Tailor made
 
 ## Prequisite
 
@@ -97,7 +99,7 @@ Here are a non-exhausive list of library I used / docs that might be helpful:
 ## Contributions
 
 Honestly, as the app is highly customized to myself,
-I strongly recommend just cloning it and adjust it to your own likings.
+I strongly recommend just fork it and adjust it to your own likings.
 But any sort of contributions / recommendations are welcomed!
 Really, do whatever you like, I couldn't care less.
 

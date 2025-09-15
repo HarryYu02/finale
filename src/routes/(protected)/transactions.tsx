@@ -69,9 +69,11 @@ const Transactions: Component = () => {
   };
 
   return (
-    <div class="">
+    <div class="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
       <Dialog>
-        <DialogTrigger as={Button}>+ Add transaction</DialogTrigger>
+        <DialogTrigger as={Button} class="mx-auto max-w-md">
+          + Add transaction
+        </DialogTrigger>
         <DialogContent class="max-h-[90%] w-md max-w-[90%]">
           <DialogHeader>
             <DialogTitle>Add a transaction</DialogTitle>
@@ -82,12 +84,18 @@ const Transactions: Component = () => {
           />
         </DialogContent>
       </Dialog>
-      <div class="flex flex-col gap-4 py-4">
+      <div class="mx-auto flex w-lg flex-col gap-4">
         <For each={userTransactionsByDate()}>
           {(transaction) => {
             return (
               <div class="flex flex-col">
-                <p class="font-bold">{transaction[0]}</p>
+                <p class="text-muted-foreground text-sm uppercase">
+                  {new Date(transaction[0]).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
                 <For each={transaction[1]} fallback={"No transactions"}>
                   {(transactionInDate, i) => {
                     return (
