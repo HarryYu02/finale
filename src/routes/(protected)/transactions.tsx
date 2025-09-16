@@ -90,11 +90,14 @@ const Transactions: Component = () => {
             return (
               <div class="flex flex-col">
                 <p class="text-muted-foreground text-sm uppercase">
-                  {new Date(transaction[0]).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {new Date(`${transaction[0]}T00:00:00`).toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    },
+                  )}
                 </p>
                 <For each={transaction[1]} fallback={"No transactions"}>
                   {(transactionInDate, i) => {
@@ -111,11 +114,7 @@ const Transactions: Component = () => {
                             <For each={transactionInDate.entries}>
                               {(entry) => (
                                 <li class="ml-6">
-                                  {entry.account?.name}{" "}
-                                  {entry.account?.normalSide === entry.side
-                                    ? "+"
-                                    : "-"}
-                                  {entry.amount / 100}
+                                  {entry.account?.name} {entry.amount / 100}
                                 </li>
                               )}
                             </For>

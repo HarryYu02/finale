@@ -62,7 +62,9 @@ export const getNetWorth = query(async () => {
 export const getIncomeExpense = query(async () => {
   "use server";
   const session = await assertSession();
-  const month = new Date().getMonth() + 1;
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
   const allUserIncomeExpenceInMonth = await db
     .select()
     .from(entries)
@@ -71,6 +73,7 @@ export const getIncomeExpense = query(async () => {
     .where(
       and(
         eq(taccounts.userId, session.user.id),
+        sql`cast(strftime('%Y', ${transactions.date}, 'unixepoch') as integer) = ${year}`,
         sql`cast(strftime('%m', ${transactions.date}, 'unixepoch') as integer) = ${month}`,
         inArray(taccounts.type, ["income", "expense"]),
       ),

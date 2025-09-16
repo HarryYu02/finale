@@ -21,7 +21,9 @@ I have tried some well made apps on the market as well,
 but they are either bundled with a lot of features I don't need,
 or is paid (I am cheap). So I decided to make my own.
 
-The goals:
+More about the app in my [blog page](https://harry-yu.com/blogs/2).
+
+## Goals
 
 1. Accurate
 2. Intuitive
