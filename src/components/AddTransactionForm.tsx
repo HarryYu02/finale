@@ -193,7 +193,13 @@ const AddTransactionForm: Component<{
                 name={field().name}
                 value={field().state.value}
                 onBlur={field().handleBlur}
-                onChange={(v) => field().handleChange(v)}
+                onChange={(v) =>
+                  field().handleChange(
+                    !v?.length && (field().state.value?.length ?? 0) > 0
+                      ? field().state.value
+                      : v,
+                  )
+                }
                 onInputChange={(v) => {
                   field().handleChange(v);
                 }}
@@ -207,117 +213,7 @@ const AddTransactionForm: Component<{
             );
           }}
         </form.Field>
-        <p>From</p>
-        <form.Field name="from">
-          {(field) => (
-            <div class="flex flex-col gap-4">
-              <Show
-                when={
-                  field().state.meta.errors &&
-                  field().state.meta.errors.length > 0
-                }
-              >
-                <p class="text-error-foreground text-xs">
-                  {field().state.meta.errors?.[0]?.message}
-                </p>
-              </Show>
-              <Show when={field().state.value.length > 0}>
-                <Index each={field().state.value}>
-                  {(_, i) => (
-                    <div class="flex items-center gap-2">
-                      <form.Field name={`from[${i}].taccountId`}>
-                        {(subField) => (
-                          <Select
-                            class=""
-                            validationState={
-                              subField().state.meta.errors &&
-                              subField().state.meta.errors.length === 0
-                                ? "valid"
-                                : "invalid"
-                            }
-                            name={subField().name}
-                            value={subField().state.value}
-                            onBlur={subField().handleBlur}
-                            onChange={(value) => {
-                              if (value) return subField().handleChange(value);
-                            }}
-                            required
-                            options={props.accounts.map((ac) => ac.id)}
-                            placeholder="Select account type"
-                            itemComponent={(selectProps) => (
-                              <SelectItem item={selectProps.item}>
-                                {accountIdToName(selectProps.item.rawValue)}
-                              </SelectItem>
-                            )}
-                          >
-                            <SelectTrigger
-                              aria-label="Account"
-                              class="w-[180px]"
-                            >
-                              <SelectValue<number>>
-                                {(state) =>
-                                  accountIdToName(state.selectedOption())
-                                }
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent />
-                          </Select>
-                        )}
-                      </form.Field>
-                      <span>$</span>
-                      <form.Field name={`from[${i}].amount`}>
-                        {(subField) => (
-                          <NumberField
-                            class="flex flex-col gap-2"
-                            validationState={
-                              subField().state.meta.errors &&
-                              subField().state.meta.errors.length === 0
-                                ? "valid"
-                                : "invalid"
-                            }
-                            name={subField().name}
-                            rawValue={subField().state.value}
-                            onBlur={subField().handleBlur}
-                            onRawValueChange={subField().handleChange}
-                            required
-                            minValue={0}
-                            step={0.01}
-                            inputMode="decimal"
-                            format
-                            formatOptions={{
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }}
-                          >
-                            <NumberFieldGroup>
-                              <NumberFieldInput />
-                              <NumberFieldIncrementTrigger />
-                              <NumberFieldDecrementTrigger />
-                            </NumberFieldGroup>
-                          </NumberField>
-                        )}
-                      </form.Field>
-                    </div>
-                  )}
-                </Index>
-              </Show>
-              <Button
-                onClick={() =>
-                  field().pushValue({
-                    amount: 0,
-                    taccountId: props.accounts[0].id,
-                  })
-                }
-                disabled={props.accounts.length === 0}
-                type="button"
-                variant={"secondary"}
-              >
-                + Add
-              </Button>
-            </div>
-          )}
-        </form.Field>
-        <p>To</p>
+        <p>To (Dr)</p>
         <form.Field name="to">
           {(field) => (
             <div class="flex flex-col gap-4">
@@ -376,6 +272,116 @@ const AddTransactionForm: Component<{
                       </form.Field>
                       <span>$</span>
                       <form.Field name={`to[${i}].amount`}>
+                        {(subField) => (
+                          <NumberField
+                            class="flex flex-col gap-2"
+                            validationState={
+                              subField().state.meta.errors &&
+                              subField().state.meta.errors.length === 0
+                                ? "valid"
+                                : "invalid"
+                            }
+                            name={subField().name}
+                            rawValue={subField().state.value}
+                            onBlur={subField().handleBlur}
+                            onRawValueChange={subField().handleChange}
+                            required
+                            minValue={0}
+                            step={0.01}
+                            inputMode="decimal"
+                            format
+                            formatOptions={{
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }}
+                          >
+                            <NumberFieldGroup>
+                              <NumberFieldInput />
+                              <NumberFieldIncrementTrigger />
+                              <NumberFieldDecrementTrigger />
+                            </NumberFieldGroup>
+                          </NumberField>
+                        )}
+                      </form.Field>
+                    </div>
+                  )}
+                </Index>
+              </Show>
+              <Button
+                onClick={() =>
+                  field().pushValue({
+                    amount: 0,
+                    taccountId: props.accounts[0].id,
+                  })
+                }
+                disabled={props.accounts.length === 0}
+                type="button"
+                variant={"secondary"}
+              >
+                + Add
+              </Button>
+            </div>
+          )}
+        </form.Field>
+        <p>From (Cr)</p>
+        <form.Field name="from">
+          {(field) => (
+            <div class="flex flex-col gap-4">
+              <Show
+                when={
+                  field().state.meta.errors &&
+                  field().state.meta.errors.length > 0
+                }
+              >
+                <p class="text-error-foreground text-xs">
+                  {field().state.meta.errors?.[0]?.message}
+                </p>
+              </Show>
+              <Show when={field().state.value.length > 0}>
+                <Index each={field().state.value}>
+                  {(_, i) => (
+                    <div class="flex items-center gap-2">
+                      <form.Field name={`from[${i}].taccountId`}>
+                        {(subField) => (
+                          <Select
+                            class=""
+                            validationState={
+                              subField().state.meta.errors &&
+                              subField().state.meta.errors.length === 0
+                                ? "valid"
+                                : "invalid"
+                            }
+                            name={subField().name}
+                            value={subField().state.value}
+                            onBlur={subField().handleBlur}
+                            onChange={(value) => {
+                              if (value) return subField().handleChange(value);
+                            }}
+                            required
+                            options={props.accounts.map((ac) => ac.id)}
+                            placeholder="Select account type"
+                            itemComponent={(selectProps) => (
+                              <SelectItem item={selectProps.item}>
+                                {accountIdToName(selectProps.item.rawValue)}
+                              </SelectItem>
+                            )}
+                          >
+                            <SelectTrigger
+                              aria-label="Account"
+                              class="w-[180px]"
+                            >
+                              <SelectValue<number>>
+                                {(state) =>
+                                  accountIdToName(state.selectedOption())
+                                }
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent />
+                          </Select>
+                        )}
+                      </form.Field>
+                      <span>$</span>
+                      <form.Field name={`from[${i}].amount`}>
                         {(subField) => (
                           <NumberField
                             class="flex flex-col gap-2"

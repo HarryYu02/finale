@@ -1,8 +1,17 @@
 import { createAsync, useAction } from "@solidjs/router";
 import Trash from "lucide-solid/icons/trash-2";
+import More from "lucide-solid/icons/ellipsis-vertical";
 import { type Component, For, Show } from "solid-js";
 import AddTransactionForm from "@/components/AddTransactionForm";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { getAccounts, getEntries } from "@/server";
 import { deleteTransactionAction } from "@/server/actions";
+import { showToast } from "@/components/ui/toast";
 
 const Transactions: Component = () => {
   const deleteTransaction = useAction(deleteTransactionAction);
@@ -85,7 +95,7 @@ const Transactions: Component = () => {
           />
         </DialogContent>
       </Dialog>
-      <div class="mx-auto grid w-full max-w-lg grid-cols-5 gap-4">
+      <div class="mx-auto grid w-full max-w-lg grid-cols-6 gap-4">
         <For each={userTransactionsByDate()}>
           {(transactions) => {
             return (
@@ -103,49 +113,67 @@ const Transactions: Component = () => {
                 <For each={transactions[1]} fallback={"No transactions"}>
                   {(transactionInDate, i) => {
                     return (
-                      <div class="col-span-full grid grid-cols-subgrid hover:bg-muted">
+                      <>
                         <Show when={i() > 0}>
                           <Separator class="col-span-full my-2" />
                         </Show>
-                        <p class="col-span-full">
-                          {transactionInDate.meta.description ?? "N/A"}
-                        </p>
-                        <For each={transactionInDate.entries}>
-                          {(entry) => (
-                            <>
-                              <span
-                                class={cn(
-                                  "col-span-3 pl-6",
-                                  entry.side === "cr" && "pl-12",
-                                )}
-                              >
-                                {entry.account?.name}
-                              </span>
-                              <span class="col-span-1 tabular-nums">
-                                <Show when={entry.side === "dr"}>
-                                  {(entry.amount / 100).toFixed(2)}
-                                </Show>
-                              </span>
-                              <span class="col-span-1 tabular-nums">
-                                <Show when={entry.side === "cr"}>
-                                  {(entry.amount / 100).toFixed(2)}
-                                </Show>
-                              </span>
-                            </>
-                          )}
-                        </For>
-                        {/* <Button */}
-                        {/*   variant={"destructive"} */}
-                        {/*   onClick={async () => { */}
-                        {/*     const deleted = await deleteTransaction( */}
-                        {/*       transactionInDate.meta.id, */}
-                        {/*     ); */}
-                        {/*     console.info(deleted); */}
-                        {/*   }} */}
-                        {/* > */}
-                        {/*   <Trash /> */}
-                        {/* </Button> */}
-                      </div>
+                        <div class="col-span-5 grid grid-cols-subgrid">
+                          <p class="col-span-full font-semibold">
+                            {transactionInDate.meta.description ?? "N/A"}
+                          </p>
+                          <For each={transactionInDate.entries}>
+                            {(entry) => (
+                              <>
+                                <span
+                                  class={cn(
+                                    "col-span-3 pl-6",
+                                    entry.side === "cr" && "pl-12",
+                                  )}
+                                >
+                                  {entry.account?.name}
+                                </span>
+                                <span class="justify-self-end tabular-nums">
+                                  <Show when={entry.side === "dr"}>
+                                    {(entry.amount / 100).toFixed(2)}
+                                  </Show>
+                                </span>
+                                <span class="justify-self-end tabular-nums">
+                                  <Show when={entry.side === "cr"}>
+                                    {(entry.amount / 100).toFixed(2)}
+                                  </Show>
+                                </span>
+                              </>
+                            )}
+                          </For>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            as={Button}
+                            variant={"ghost"}
+                            size={"icon"}
+                            class="place-self-center"
+                          >
+                            <More />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              onClick={async () => {
+                                const deleted = await deleteTransaction(
+                                  transactionInDate.meta.id,
+                                );
+                                showToast({
+                                  title: "Deleted",
+                                  variant: "success",
+                                  description: `${deleted[0].description ?? "Transaction"} deleted successfully.`,
+                                });
+                              }}
+                            >
+                              <Trash size={16} />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </>
                     );
                   }}
                 </For>
