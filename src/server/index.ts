@@ -1,5 +1,5 @@
 import { query, redirect } from "@solidjs/router";
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { getRequestEvent } from "solid-js/web";
 import { db } from "@/db";
 import { entries, taccounts, transactions } from "@/db/schema";
@@ -34,7 +34,8 @@ export const getEntries = query(async () => {
     .from(entries)
     .leftJoin(transactions, eq(entries.transactionId, transactions.id))
     .leftJoin(taccounts, eq(entries.taccountId, taccounts.id))
-    .where(eq(transactions.userId, session.user.id));
+    .where(eq(transactions.userId, session.user.id))
+    .orderBy(desc(entries.side));
   return allEntries;
 }, "getEntries");
 

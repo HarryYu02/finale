@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { getAccounts, getEntries } from "@/server";
 import { deleteTransactionAction } from "@/server/actions";
 
@@ -84,13 +85,13 @@ const Transactions: Component = () => {
           />
         </DialogContent>
       </Dialog>
-      <div class="mx-auto flex w-lg flex-col gap-4">
+      <div class="mx-auto grid w-full max-w-lg grid-cols-5 gap-4">
         <For each={userTransactionsByDate()}>
-          {(transaction) => {
+          {(transactions) => {
             return (
-              <div class="flex flex-col">
-                <p class="text-muted-foreground text-sm uppercase">
-                  {new Date(`${transaction[0]}T00:00:00`).toLocaleDateString(
+              <div class="col-span-full grid grid-cols-subgrid">
+                <p class="col-span-full text-muted-foreground text-sm uppercase">
+                  {new Date(`${transactions[0]}T00:00:00`).toLocaleDateString(
                     "en-US",
                     {
                       year: "numeric",
@@ -99,38 +100,51 @@ const Transactions: Component = () => {
                     },
                   )}
                 </p>
-                <For each={transaction[1]} fallback={"No transactions"}>
+                <For each={transactions[1]} fallback={"No transactions"}>
                   {(transactionInDate, i) => {
                     return (
-                      <div>
+                      <div class="col-span-full grid grid-cols-subgrid hover:bg-muted">
                         <Show when={i() > 0}>
-                          <Separator class="my-2" />
+                          <Separator class="col-span-full my-2" />
                         </Show>
-                        <div class="flex items-center justify-between">
-                          <ul class="list-disc">
-                            <p>
-                              {transactionInDate.meta.description ?? "N/A"}{" "}
-                            </p>
-                            <For each={transactionInDate.entries}>
-                              {(entry) => (
-                                <li class="ml-6">
-                                  {entry.account?.name} {entry.amount / 100}
-                                </li>
-                              )}
-                            </For>
-                          </ul>
-                          <Button
-                            variant={"destructive"}
-                            onClick={async () => {
-                              const deleted = await deleteTransaction(
-                                transactionInDate.meta.id,
-                              );
-                              console.info(deleted);
-                            }}
-                          >
-                            <Trash />
-                          </Button>
-                        </div>
+                        <p class="col-span-full">
+                          {transactionInDate.meta.description ?? "N/A"}
+                        </p>
+                        <For each={transactionInDate.entries}>
+                          {(entry) => (
+                            <>
+                              <span
+                                class={cn(
+                                  "col-span-3 pl-6",
+                                  entry.side === "cr" && "pl-12",
+                                )}
+                              >
+                                {entry.account?.name}
+                              </span>
+                              <span class="col-span-1 tabular-nums">
+                                <Show when={entry.side === "dr"}>
+                                  {(entry.amount / 100).toFixed(2)}
+                                </Show>
+                              </span>
+                              <span class="col-span-1 tabular-nums">
+                                <Show when={entry.side === "cr"}>
+                                  {(entry.amount / 100).toFixed(2)}
+                                </Show>
+                              </span>
+                            </>
+                          )}
+                        </For>
+                        {/* <Button */}
+                        {/*   variant={"destructive"} */}
+                        {/*   onClick={async () => { */}
+                        {/*     const deleted = await deleteTransaction( */}
+                        {/*       transactionInDate.meta.id, */}
+                        {/*     ); */}
+                        {/*     console.info(deleted); */}
+                        {/*   }} */}
+                        {/* > */}
+                        {/*   <Trash /> */}
+                        {/* </Button> */}
                       </div>
                     );
                   }}
