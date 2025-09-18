@@ -87,7 +87,7 @@ export const getIncomeExpense = query(async () => {
             ? cur.entries.side === "cr"
               ? acc + cur.entries.amount
               : acc - cur.entries.amount
-            : 0,
+            : acc,
         0,
       ) / 100,
     expense:
@@ -97,7 +97,7 @@ export const getIncomeExpense = query(async () => {
             ? cur.entries.side === "dr"
               ? acc + cur.entries.amount
               : acc - cur.entries.amount
-            : 0,
+            : acc,
         0,
       ) / 100,
   };

@@ -154,6 +154,10 @@ const Transactions: Component = () => {
                             <More />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
+                            <DropdownMenuItem onClick={async () => {}}>
+                              <Trash size={16} />
+                              Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={async () => {
                                 const deleted = await deleteTransaction(
