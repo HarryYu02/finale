@@ -51,9 +51,9 @@ export const LoginForm: Component<ComponentProps<"div">> = (props) => {
               <div class="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd class="size-6" />
               </div>
-              <span class="sr-only">Acme Inc.</span>
+              <span class="sr-only">Finale ledger</span>
             </a>
-            <h1 class="font-bold text-xl">Welcome to Acme Inc.</h1>
+            <h1 class="font-bold text-xl">Welcome to Finale ledger</h1>
             <div class="text-center text-sm">
               Don&apos;t have an account?{" "}
               <a href="/signup" class="underline underline-offset-4">

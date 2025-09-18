@@ -16,13 +16,19 @@ export default function Home() {
         <Match when={true}>User not logged in</Match>
       </Switch>
       <div class="flex gap-2">
-        <Button as={A} href="/login">
-          Login
-        </Button>
-        <Button as={A} href="/signup">
-          Sign up
-        </Button>
-        <Show when={!!session().data}>
+        <Show
+          when={!!session().data}
+          fallback={
+            <>
+              <Button as={A} href="/login">
+                Login
+              </Button>
+              <Button as={A} href="/signup">
+                Sign up
+              </Button>
+            </>
+          }
+        >
           <Button
             onClick={async () => {
               const result = await authClient.signOut();

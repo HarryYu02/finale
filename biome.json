@@ -11,6 +11,7 @@
     "includes": [
       "**",
       "!./tsconfig.json",
+      "!./migrations",
       "!**/package.json",
       "!**/app.config.*.js"
     ]

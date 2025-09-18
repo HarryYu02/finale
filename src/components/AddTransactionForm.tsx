@@ -23,13 +23,6 @@ import {
   NumberFieldIncrementTrigger,
   NumberFieldInput,
 } from "./ui/number-field";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { Separator } from "./ui/separator";
 import {
   TextField,
@@ -239,6 +232,7 @@ const AddTransactionForm: Component<{
                     <div class="flex items-center gap-2">
                       <form.Field name={`to[${i}].taccountId`}>
                         {(subField) => (
+                          // FIXME: arbitrary account name -> last selected option
                           <Combobox
                             placeholder="Select account"
                             class=""

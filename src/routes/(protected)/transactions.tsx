@@ -1,17 +1,9 @@
 import { createAsync, useAction } from "@solidjs/router";
-import Trash from "lucide-solid/icons/trash-2";
 import More from "lucide-solid/icons/ellipsis-vertical";
+import Trash from "lucide-solid/icons/trash-2";
 import { type Component, For, Show } from "solid-js";
 import AddTransactionForm from "@/components/AddTransactionForm";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -19,11 +11,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { showToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { getAccounts, getEntries } from "@/server";
 import { deleteTransactionAction } from "@/server/actions";
-import { showToast } from "@/components/ui/toast";
 
 const Transactions: Component = () => {
   const deleteTransaction = useAction(deleteTransactionAction);
