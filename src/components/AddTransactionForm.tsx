@@ -64,7 +64,7 @@ const formSchema = transactionInsertSchema
       const sumTo = v.to.reduce((sum, cur) => sum + cur.amount, 0);
       return sumFrom === sumTo;
     },
-    { error: "The amount of 'from' and 'to' does't add up." },
+    { error: "Numbers don't add up." },
   );
 type FormSchemaType = z.infer<typeof formSchema>;
 
@@ -97,7 +97,6 @@ const AddTransactionForm: Component<{
   const form = createForm(() => ({
     defaultValues,
     onSubmit: async ({ value }) => {
-      console.log(value);
       const insertedTransactions = await addTransaction({
         date: value.date,
         description: value.description,
@@ -144,6 +143,15 @@ const AddTransactionForm: Component<{
       class="flex flex-col gap-4"
     >
       <div class="flex flex-col gap-2">
+        <form.Subscribe selector={(state) => state.errorMap}>
+          {(errorMap) => {
+            return (
+              <p class="text-error-foreground text-sm">
+                {errorMap().onChange?.[""]?.[0].message}
+              </p>
+            );
+          }}
+        </form.Subscribe>
         <form.Field name="date">
           {(field) => (
             <TextField
@@ -161,9 +169,7 @@ const AddTransactionForm: Component<{
             >
               <TextFieldLabel class="">Date</TextFieldLabel>
               <TextFieldInput type="date" />
-              <TextFieldErrorMessage>
-                {field().state.meta.errors[0]?.message}
-              </TextFieldErrorMessage>
+              <TextFieldErrorMessage>When?</TextFieldErrorMessage>
             </TextField>
           )}
         </form.Field>
@@ -179,7 +185,7 @@ const AddTransactionForm: Component<{
             return (
               <Combobox
                 class=""
-                placeholder="Search for a description"
+                placeholder="Search for a description (optional)"
                 options={options()}
                 itemComponent={(props) => (
                   <ComboboxItem item={props.item}>
@@ -233,14 +239,11 @@ const AddTransactionForm: Component<{
                     <div class="flex items-center gap-2">
                       <form.Field name={`to[${i}].taccountId`}>
                         {(subField) => (
-                          <Select
+                          <Combobox
+                            placeholder="Select account"
                             class=""
-                            validationState={
-                              subField().state.meta.errors &&
-                              subField().state.meta.errors.length === 0
-                                ? "valid"
-                                : "invalid"
-                            }
+                            options={props.accounts.map((ac) => ac.id)}
+                            optionTextValue={(op) => accountIdToName(op) ?? ""}
                             name={subField().name}
                             value={subField().state.value}
                             onBlur={subField().handleBlur}
@@ -248,26 +251,32 @@ const AddTransactionForm: Component<{
                               if (value) return subField().handleChange(value);
                             }}
                             required
-                            options={props.accounts.map((ac) => ac.id)}
-                            placeholder="Select account type"
-                            itemComponent={(selectProps) => (
-                              <SelectItem item={selectProps.item}>
-                                {accountIdToName(selectProps.item.rawValue)}
-                              </SelectItem>
+                            validationState={
+                              subField().state.meta.errors &&
+                              subField().state.meta.errors.length === 0
+                                ? "valid"
+                                : "invalid"
+                            }
+                            itemComponent={(props) => (
+                              <ComboboxItem item={props.item}>
+                                <ComboboxItemLabel>
+                                  {accountIdToName(props.item.rawValue)}
+                                </ComboboxItemLabel>
+                                <ComboboxItemIndicator />
+                              </ComboboxItem>
                             )}
                           >
-                            <SelectTrigger
-                              aria-label="Account"
-                              class="w-[180px]"
-                            >
-                              <SelectValue<number>>
-                                {(state) =>
-                                  accountIdToName(state.selectedOption())
-                                }
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent />
-                          </Select>
+                            <ComboboxControl aria-label="To account">
+                              <ComboboxInput
+                                value={accountIdToName(subField().state.value)}
+                                onFocus={(e) => {
+                                  (e.target as HTMLInputElement).select();
+                                }}
+                              />
+                              <ComboboxTrigger />
+                            </ComboboxControl>
+                            <ComboboxContent />
+                          </Combobox>
                         )}
                       </form.Field>
                       <span>$</span>
@@ -296,13 +305,26 @@ const AddTransactionForm: Component<{
                             }}
                           >
                             <NumberFieldGroup>
-                              <NumberFieldInput />
+                              <NumberFieldInput
+                                onFocus={(e) => {
+                                  (e.target as HTMLInputElement).select();
+                                }}
+                              />
                               <NumberFieldIncrementTrigger />
                               <NumberFieldDecrementTrigger />
                             </NumberFieldGroup>
                           </NumberField>
                         )}
                       </form.Field>
+                      <Button
+                        variant={"outline"}
+                        class=""
+                        onClick={() => {
+                          field().removeValue(i);
+                        }}
+                      >
+                        -
+                      </Button>
                     </div>
                   )}
                 </Index>
@@ -343,14 +365,11 @@ const AddTransactionForm: Component<{
                     <div class="flex items-center gap-2">
                       <form.Field name={`from[${i}].taccountId`}>
                         {(subField) => (
-                          <Select
+                          <Combobox
+                            placeholder="Select account"
                             class=""
-                            validationState={
-                              subField().state.meta.errors &&
-                              subField().state.meta.errors.length === 0
-                                ? "valid"
-                                : "invalid"
-                            }
+                            options={props.accounts.map((ac) => ac.id)}
+                            optionTextValue={(op) => accountIdToName(op) ?? ""}
                             name={subField().name}
                             value={subField().state.value}
                             onBlur={subField().handleBlur}
@@ -358,26 +377,32 @@ const AddTransactionForm: Component<{
                               if (value) return subField().handleChange(value);
                             }}
                             required
-                            options={props.accounts.map((ac) => ac.id)}
-                            placeholder="Select account type"
-                            itemComponent={(selectProps) => (
-                              <SelectItem item={selectProps.item}>
-                                {accountIdToName(selectProps.item.rawValue)}
-                              </SelectItem>
+                            validationState={
+                              subField().state.meta.errors &&
+                              subField().state.meta.errors.length === 0
+                                ? "valid"
+                                : "invalid"
+                            }
+                            itemComponent={(props) => (
+                              <ComboboxItem item={props.item}>
+                                <ComboboxItemLabel>
+                                  {accountIdToName(props.item.rawValue)}
+                                </ComboboxItemLabel>
+                                <ComboboxItemIndicator />
+                              </ComboboxItem>
                             )}
                           >
-                            <SelectTrigger
-                              aria-label="Account"
-                              class="w-[180px]"
-                            >
-                              <SelectValue<number>>
-                                {(state) =>
-                                  accountIdToName(state.selectedOption())
-                                }
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent />
-                          </Select>
+                            <ComboboxControl aria-label="To account">
+                              <ComboboxInput
+                                value={accountIdToName(subField().state.value)}
+                                onFocus={(e) => {
+                                  (e.target as HTMLInputElement).select();
+                                }}
+                              />
+                              <ComboboxTrigger />
+                            </ComboboxControl>
+                            <ComboboxContent />
+                          </Combobox>
                         )}
                       </form.Field>
                       <span>$</span>
@@ -406,13 +431,26 @@ const AddTransactionForm: Component<{
                             }}
                           >
                             <NumberFieldGroup>
-                              <NumberFieldInput />
+                              <NumberFieldInput
+                                onFocus={(e) => {
+                                  (e.target as HTMLInputElement).select();
+                                }}
+                              />
                               <NumberFieldIncrementTrigger />
                               <NumberFieldDecrementTrigger />
                             </NumberFieldGroup>
                           </NumberField>
                         )}
                       </form.Field>
+                      <Button
+                        variant={"outline"}
+                        class=""
+                        onClick={() => {
+                          field().removeValue(i);
+                        }}
+                      >
+                        -
+                      </Button>
                     </div>
                   )}
                 </Index>
