@@ -1,6 +1,7 @@
 import { useAction } from "@solidjs/router";
 import { createForm } from "@tanstack/solid-form";
 import { createInsertSchema } from "drizzle-zod";
+import Trash from "lucide-solid/icons/trash-2";
 import { type Component, Index, Show } from "solid-js";
 import * as z from "zod";
 import { entries, type taccounts, transactions } from "@/db/schema";
@@ -317,7 +318,7 @@ const AddTransactionForm: Component<{
                           field().removeValue(i);
                         }}
                       >
-                        -
+                        <Trash />
                       </Button>
                     </div>
                   )}
@@ -443,7 +444,7 @@ const AddTransactionForm: Component<{
                           field().removeValue(i);
                         }}
                       >
-                        -
+                        <Trash />
                       </Button>
                     </div>
                   )}
