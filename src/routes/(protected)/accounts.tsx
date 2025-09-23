@@ -28,7 +28,7 @@ const Accounts: Component = () => {
   );
 
   return (
-    <div class="mx-auto flex w-lg flex-col">
+    <div class="mx-auto flex w-full max-w-lg flex-col">
       <Accordion
         multiple={false}
         collapsible

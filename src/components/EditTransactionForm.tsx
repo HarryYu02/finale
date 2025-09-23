@@ -4,9 +4,7 @@ import { createInsertSchema } from "drizzle-zod";
 import Trash from "lucide-solid/icons/trash-2";
 import { type Component, Index, Show } from "solid-js";
 import * as z from "zod";
-import { accountTypes } from "@/db/enum";
 import { entries, type taccounts, transactions } from "@/db/schema";
-import { capitalize } from "@/lib/utils";
 import { addEntryAction, addTransactionAction } from "@/server/actions";
 import { Button } from "./ui/button";
 import {
@@ -17,7 +15,6 @@ import {
   ComboboxItem,
   ComboboxItemIndicator,
   ComboboxItemLabel,
-  ComboboxSection,
   ComboboxTrigger,
 } from "./ui/combobox";
 import {
@@ -74,12 +71,22 @@ const defaultValues: FormSchemaType = {
 
 type TAccount = typeof taccounts.$inferSelect;
 
-const AddTransactionForm: Component<{
+const EditTransactionForm: Component<{
   accounts: TAccount[];
   transactionsDesc: string[];
 }> = (props) => {
   const addTransaction = useAction(addTransactionAction);
   const addEntry = useAction(addEntryAction);
+  const accountsMap = () => {
+    const map: Map<number, TAccount> = new Map();
+    props.accounts.forEach((ac) => {
+      map.set(ac.id, ac);
+    });
+    return map;
+  };
+  function accountIdToName(id: number) {
+    return accountsMap().get(id)?.name;
+  }
 
   const form = createForm(() => ({
     defaultValues,
@@ -91,18 +98,24 @@ const AddTransactionForm: Component<{
       if (insertedTransactions.length === 0) return;
       const transactionId = insertedTransactions[0].id;
       for (let i = 0; i < value.from.length; ++i) {
+        const ac = accountsMap().get(value.from[i].taccountId);
+        if (!ac) return;
+        const amount = value.from[i].amount;
         await addEntry({
-          amount: value.from[i].amount * 100,
+          amount: amount * 100,
           transactionId: transactionId,
-          taccountId: value.from[i].taccountId,
+          taccountId: ac.id,
           side: "cr",
         });
       }
       for (let i = 0; i < value.to.length; ++i) {
+        const ac = accountsMap().get(value.to[i].taccountId);
+        if (!ac) return;
+        const amount = value.to[i].amount;
         await addEntry({
-          amount: value.to[i].amount * 100,
+          amount: amount * 100,
           transactionId: transactionId,
-          taccountId: value.to[i].taccountId,
+          taccountId: ac.id,
           side: "dr",
         });
       }
@@ -113,37 +126,6 @@ const AddTransactionForm: Component<{
       onChange: formSchema,
     },
   }));
-
-  type Account = {
-    value: number;
-    label: string;
-    disabled: boolean;
-  };
-
-  type Category = {
-    label: (typeof accountTypes)[number];
-    options: Account[];
-  };
-
-  const accountOptions = (): Category[] => {
-    const accounts = () => props.accounts;
-    const categoryMap = new Map<Category["label"], Category["options"]>();
-
-    accounts().forEach((ac) => {
-      const prev = categoryMap.get(ac.type) ?? [];
-      categoryMap.set(ac.type, [
-        ...prev,
-        { label: ac.name, value: ac.id, disabled: false },
-      ]);
-    });
-
-    return accountTypes
-      .map((type) => ({
-        label: type,
-        options: categoryMap.get(type) ?? [],
-      }))
-      .filter((category) => category.options.length > 0);
-  };
 
   return (
     <form
@@ -251,26 +233,17 @@ const AddTransactionForm: Component<{
                     <div class="flex items-center gap-2">
                       <form.Field name={`to[${i}].taccountId`}>
                         {(subField) => (
-                          // FIXME: arbitrary account name -> fallback to last selected option
-                          <Combobox<Account, Category>
+                          // FIXME: arbitrary account name -> last selected option
+                          <Combobox
                             placeholder="Select account"
                             class=""
-                            options={accountOptions()}
-                            optionValue="value"
-                            optionTextValue="label"
-                            optionLabel="label"
-                            optionDisabled="disabled"
-                            optionGroupChildren="options"
+                            options={props.accounts.map((ac) => ac.id)}
+                            optionTextValue={(op) => accountIdToName(op) ?? ""}
                             name={subField().name}
-                            value={{
-                              label: "",
-                              value: subField().state.value,
-                              disabled: false,
-                            }}
+                            value={subField().state.value}
                             onBlur={subField().handleBlur}
                             onChange={(value) => {
-                              if (value)
-                                return subField().handleChange(value.value);
+                              if (value) return subField().handleChange(value);
                             }}
                             required
                             validationState={
@@ -279,15 +252,10 @@ const AddTransactionForm: Component<{
                                 ? "valid"
                                 : "invalid"
                             }
-                            sectionComponent={(props) => (
-                              <ComboboxSection>
-                                {capitalize(props.section.rawValue.label)}
-                              </ComboboxSection>
-                            )}
                             itemComponent={(props) => (
                               <ComboboxItem item={props.item}>
                                 <ComboboxItemLabel>
-                                  {props.item.rawValue.label}
+                                  {accountIdToName(props.item.rawValue)}
                                 </ComboboxItemLabel>
                                 <ComboboxItemIndicator />
                               </ComboboxItem>
@@ -295,13 +263,14 @@ const AddTransactionForm: Component<{
                           >
                             <ComboboxControl aria-label="To account">
                               <ComboboxInput
+                                value={accountIdToName(subField().state.value)}
                                 onFocus={(e) => {
                                   (e.target as HTMLInputElement).select();
                                 }}
                               />
                               <ComboboxTrigger />
                             </ComboboxControl>
-                            <ComboboxContent class="scrollbar-none max-h-48 overflow-y-auto" />
+                            <ComboboxContent />
                           </Combobox>
                         )}
                       </form.Field>
@@ -391,25 +360,16 @@ const AddTransactionForm: Component<{
                     <div class="flex items-center gap-2">
                       <form.Field name={`from[${i}].taccountId`}>
                         {(subField) => (
-                          <Combobox<Account, Category>
+                          <Combobox
                             placeholder="Select account"
                             class=""
-                            options={accountOptions()}
-                            optionValue="value"
-                            optionTextValue="label"
-                            optionLabel="label"
-                            optionDisabled="disabled"
-                            optionGroupChildren="options"
+                            options={props.accounts.map((ac) => ac.id)}
+                            optionTextValue={(op) => accountIdToName(op) ?? ""}
                             name={subField().name}
-                            value={{
-                              label: "",
-                              value: subField().state.value,
-                              disabled: false,
-                            }}
+                            value={subField().state.value}
                             onBlur={subField().handleBlur}
                             onChange={(value) => {
-                              if (value)
-                                return subField().handleChange(value.value);
+                              if (value) return subField().handleChange(value);
                             }}
                             required
                             validationState={
@@ -418,15 +378,10 @@ const AddTransactionForm: Component<{
                                 ? "valid"
                                 : "invalid"
                             }
-                            sectionComponent={(props) => (
-                              <ComboboxSection>
-                                {capitalize(props.section.rawValue.label)}
-                              </ComboboxSection>
-                            )}
                             itemComponent={(props) => (
                               <ComboboxItem item={props.item}>
                                 <ComboboxItemLabel>
-                                  {props.item.rawValue.label}
+                                  {accountIdToName(props.item.rawValue)}
                                 </ComboboxItemLabel>
                                 <ComboboxItemIndicator />
                               </ComboboxItem>
@@ -434,13 +389,14 @@ const AddTransactionForm: Component<{
                           >
                             <ComboboxControl aria-label="To account">
                               <ComboboxInput
+                                value={accountIdToName(subField().state.value)}
                                 onFocus={(e) => {
                                   (e.target as HTMLInputElement).select();
                                 }}
                               />
                               <ComboboxTrigger />
                             </ComboboxControl>
-                            <ComboboxContent class="scrollbar-none max-h-48 overflow-y-auto" />
+                            <ComboboxContent />
                           </Combobox>
                         )}
                       </form.Field>
@@ -530,4 +486,4 @@ const AddTransactionForm: Component<{
   );
 };
 
-export default AddTransactionForm;
+export default EditTransactionForm;

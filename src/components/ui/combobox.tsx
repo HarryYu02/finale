@@ -181,7 +181,7 @@ const ComboboxContent = <T extends ValidComponent = "div">(
         )}
         {...others}
       >
-        <ComboboxPrimitive.Listbox class="m-0 p-1" />
+        <ComboboxPrimitive.Listbox />
       </ComboboxPrimitive.Content>
     </ComboboxPrimitive.Portal>
   );

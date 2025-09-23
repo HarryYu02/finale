@@ -1,5 +1,6 @@
 import { createAsync, useAction } from "@solidjs/router";
 import More from "lucide-solid/icons/ellipsis-vertical";
+import Edit from "lucide-solid/icons/pencil";
 import Trash from "lucide-solid/icons/trash-2";
 import { type Component, For, Show } from "solid-js";
 import AddTransactionForm from "@/components/AddTransactionForm";
@@ -155,7 +156,7 @@ const Transactions: Component = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem onClick={async () => {}}>
-                              <Trash size={16} />
+                              <Edit size={16} />
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem

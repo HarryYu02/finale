@@ -44,6 +44,7 @@
     "@tailwindcss/vite": "^4.0.7",
     "@types/better-sqlite3": "^7.6.13",
     "drizzle-kit": "^0.31.4",
+    "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.0.7",
     "tsx": "^4.20.5"
   },

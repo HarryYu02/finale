@@ -52,9 +52,7 @@ const ProtectedLayout: ParentComponent = (props) => {
             </Breadcrumb>
           </div>
         </header>
-        <main class="flex flex-1 flex-col gap-4 p-4 pt-0">
-          {props.children}
-        </main>
+        <div class="flex flex-1 flex-col gap-4 p-4 pt-0">{props.children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
