@@ -35,7 +35,7 @@ export const getEntries = query(async () => {
     .leftJoin(transactions, eq(entries.transactionId, transactions.id))
     .leftJoin(taccounts, eq(entries.taccountId, taccounts.id))
     .where(eq(transactions.userId, session.user.id))
-    .orderBy(desc(entries.side));
+    .orderBy(desc(entries.side), desc(transactions.createdAt));
   return allEntries;
 }, "getEntries");
 

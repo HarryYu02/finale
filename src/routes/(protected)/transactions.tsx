@@ -94,7 +94,7 @@ const Transactions: Component = () => {
           />
         </DialogContent>
       </Dialog>
-      <div class="mx-auto grid w-full max-w-lg grid-cols-6 gap-4">
+      <div class="mx-auto grid w-full max-w-lg grid-cols-[repeat(5,minmax(0,1fr))_2.5rem] gap-4">
         <For each={userTransactionsByDate()}>
           {(transactions) => {
             return (
@@ -117,7 +117,7 @@ const Transactions: Component = () => {
                           <Separator class="col-span-full my-2" />
                         </Show>
                         <div class="col-span-5 grid grid-cols-subgrid">
-                          <p class="col-span-full font-semibold">
+                          <p class="col-span-3 truncate font-semibold">
                             {transactionInDate.meta.description ?? "N/A"}
                           </p>
                           <For each={transactionInDate.entries}>
@@ -155,6 +155,7 @@ const Transactions: Component = () => {
                             <More />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
+                            {/* TODO: Edit transaction */}
                             <DropdownMenuItem onClick={async () => {}}>
                               <Edit size={16} />
                               Edit
