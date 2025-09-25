@@ -29,3 +29,6 @@ Thumbs.db
 
 # Sqlite
 *.db
+
+# Scraper
+scraper/*.txt

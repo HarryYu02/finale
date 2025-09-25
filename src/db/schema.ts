@@ -129,3 +129,13 @@ export const entries = sqliteTable("entries", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+export const stockPrices = sqliteTable("stock_prices", {
+  id: integer("id").primaryKey(),
+  ticker: text("ticker").notNull(),
+  currency: text("currency").notNull(),
+  price: integer("price").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
