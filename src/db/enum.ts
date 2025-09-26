@@ -7,3 +7,5 @@ export const accountTypes = [
 ] as const;
 
 export const sides = ["dr", "cr"] as const;
+
+export const stockPriceProvider = ["google_finance"] as const;

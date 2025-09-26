@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { accountTypes, sides } from "./enum";
+import { accountTypes, sides, stockPriceProvider } from "./enum";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -135,6 +135,7 @@ export const stockPrices = sqliteTable("stock_prices", {
   ticker: text("ticker").notNull(),
   currency: text("currency").notNull(),
   price: integer("price").notNull(),
+  provider: text("provider", { enum: stockPriceProvider }).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),

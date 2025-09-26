@@ -40,6 +40,15 @@ CREATE TABLE `sessions` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `sessions_token_unique` ON `sessions` (`token`);--> statement-breakpoint
+CREATE TABLE `stock_prices` (
+	`id` integer PRIMARY KEY NOT NULL,
+	`ticker` text NOT NULL,
+	`currency` text NOT NULL,
+	`price` integer NOT NULL,
+	`provider` text NOT NULL,
+	`created_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `taccounts` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,

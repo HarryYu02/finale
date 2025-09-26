@@ -7,15 +7,22 @@ else
 fi
 
 date=$(date)
-curl -o scraper/out.txt "https://www.google.com/finance/quote/${ticker}"
-printf "\n${date}" >> scraper/out.txt
-price=$(rg data-last-price scraper/out.txt | sed -E 's/.*data-last-price[^\$]*\$([0-9,]+\.[0-9]+).*/\1/' | tr -d ',')
-currency=$(rg data-currency-code scraper/out.txt | sed -E 's/.*data-currency-code=\"([a-zA-Z]+)\".*/\1/')
+name="$(echo ${ticker} | tr ":\-" "_")"
+
+curl -o scraper/${name}.txt "https://www.google.com/finance/quote/${ticker}"
+printf "\n${date}" >> scraper/${name}.txt
+price=$(rg data-last-price scraper/${name}.txt | sed -E 's/.*data-last-price=[^\$]*\$([0-9,]+\.[0-9]+).*/\1/' | tr -d ',')
+currency=$(rg data-currency-code scraper/${name}.txt | sed -E 's/.*data-currency-code=\"([a-zA-Z]+)\".*/\1/')
 
 if [[ "${#price}" -ge 1 ]]; then
-  pnpm tsx scraper/insert.ts "${date}" "${ticker}" "${currency}" "${price}"
+  echo "${date}: SUCCESS" >> scraper/log.txt
+  pnpm tsx scraper/insert.ts "${date}" "${ticker}" "${currency}" "${price}" "google_finance"
 else
-  echo "ERROR"
+  echo "${date}: ERROR" >> scraper/log.txt
+  echo "ERROR: Invalid ticker symbol"
+  rm scraper/${name}.txt
+  exit 1
 fi
 
+exit 0
 
