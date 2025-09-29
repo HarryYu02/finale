@@ -32,3 +32,4 @@ Thumbs.db
 
 # Scraper
 scraper/*.txt
+scraper/test.sh
