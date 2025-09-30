@@ -58,12 +58,34 @@ export const getNetWorth = query(async () => {
         not(taccounts.isInvestment),
       ),
     );
+
+  const invs = await getInvestments();
+  const map: Map<string, { totalShares: number; totalCost: number }> =
+    new Map();
+  invs.forEach((inv) => {
+    const prev = map.get(inv.ticker);
+    map.set(inv.ticker, {
+      totalShares: (prev?.totalShares ?? 0) + inv.share / 10000,
+      totalCost:
+        (prev?.totalCost ?? 0) + ((inv.share / 10000) * inv.price) / 10000,
+    });
+  });
+  const investmentsOverview = Array.from(map);
+  let investmentsNetWorth = 0;
+  for (let i = 0; i < investmentsOverview.length; ++i) {
+    const stockPrice = await getStockPrice(investmentsOverview[i][0]);
+    investmentsNetWorth +=
+      (stockPrice.price / 100) * investmentsOverview[i][1].totalShares;
+  }
+
   return (
     allUserAssetsLiabilities.reduce(
       (acc, cur) =>
         cur.type === "asset" ? acc + cur.amount : acc - cur.amount,
       0,
-    ) / 100
+    ) /
+      100 +
+    investmentsNetWorth
   );
 }, "getNetWorth");
 
