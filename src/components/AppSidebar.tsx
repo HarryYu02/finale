@@ -41,6 +41,10 @@ const items = [
     title: "Transactions",
     url: "/transactions",
   },
+  {
+    title: "Investments",
+    url: "/investments",
+  },
 ];
 
 export const AppSidebar: Component<{

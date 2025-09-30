@@ -106,7 +106,11 @@ const AddTransactionForm: Component<{
           side: "dr",
         });
       }
-      showToast({ title: "Transaction added", variant: "success" });
+      showToast({
+        title: "Transaction added",
+        description: value.description,
+        variant: "success",
+      });
       form.reset();
     },
     validators: {
@@ -226,7 +230,7 @@ const AddTransactionForm: Component<{
                   <ComboboxInput />
                   <ComboboxTrigger />
                 </ComboboxControl>
-                <ComboboxContent />
+                <ComboboxContent class="scrollbar-none max-h-48 overflow-y-auto" />
               </Combobox>
             );
           }}

@@ -86,6 +86,9 @@ export const taccounts = sqliteTable("taccounts", {
   normalSide: text("normal_side", { enum: sides }).notNull(),
   amount: integer("amount").default(0).notNull(),
   archived: integer("archived", { mode: "boolean" }).default(false).notNull(),
+  isInvestment: integer("is_investment", { mode: "boolean" })
+    .notNull()
+    .default(false),
   createdAt: integer("created_at", { mode: "timestamp" })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
