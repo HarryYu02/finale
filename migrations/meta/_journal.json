@@ -8,6 +8,13 @@
       "when": 1759256995931,
       "tag": "0000_real_wallop",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1759260359215,
+      "tag": "0001_spotty_mantis",
+      "breakpoints": true
     }
   ]
 }

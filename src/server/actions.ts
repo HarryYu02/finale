@@ -1,12 +1,15 @@
 import { action } from "@solidjs/router";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { entries, taccounts, transactions } from "@/db/schema";
+import { entries, investments, taccounts, transactions } from "@/db/schema";
 import { assertSession } from ".";
 
 type InsertTAccount = typeof taccounts.$inferInsert;
 type InsertTransaction = typeof transactions.$inferInsert;
 type InsertEntry = typeof entries.$inferInsert;
+type InsertInvestment = typeof investments.$inferInsert;
+
+// TODO: add zod validation before mutating
 
 export const addTAccountAction = action(
   async (data: Pick<InsertTAccount, "type" | "name" | "amount">) => {
@@ -87,3 +90,21 @@ export const addEntryAction = action(async (data: InsertEntry) => {
     .where(eq(taccounts.id, data.taccountId));
   return res;
 }, "addEntry");
+
+export const addInvestment = action(
+  async (data: Omit<InsertInvestment, "userId">) => {
+    "use server";
+    const session = await assertSession();
+    const res = await db
+      .insert(investments)
+      .values({
+        ...data,
+        price: Math.round(data.price * 10000),
+        share: Math.round(data.share * 10000),
+        userId: session.user.id,
+      })
+      .returning();
+    return res;
+  },
+  "addInvestment",
+);

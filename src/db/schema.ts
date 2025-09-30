@@ -143,3 +143,18 @@ export const stockPrices = sqliteTable("stock_prices", {
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
 });
+
+export const investments = sqliteTable("investments", {
+  id: integer("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  date: integer("date", { mode: "timestamp" }).notNull(),
+  ticker: text("ticker").notNull(),
+  currency: text("currency").notNull(),
+  price: integer("price").notNull(),
+  share: integer("share").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});

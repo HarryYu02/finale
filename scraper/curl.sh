@@ -3,7 +3,7 @@
 if [[ $# -eq 1 ]]; then
   tickers=$@
 else
-  tickers=$(sqlite3 sqlite.db "select distinct ticker from stock_prices;")
+  tickers=$(sqlite3 sqlite.db "select distinct ticker from investments;")
 fi
 
 date=$(date)

@@ -1,8 +1,14 @@
 import { query, redirect } from "@solidjs/router";
-import { and, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, not, sql } from "drizzle-orm";
 import { getRequestEvent } from "solid-js/web";
 import { db } from "@/db";
-import { entries, taccounts, transactions } from "@/db/schema";
+import {
+  entries,
+  investments,
+  stockPrices,
+  taccounts,
+  transactions,
+} from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 export const assertSession = query(async (redir: string = "/") => {
@@ -49,6 +55,7 @@ export const getNetWorth = query(async () => {
       and(
         eq(taccounts.userId, session.user.id),
         inArray(taccounts.type, ["asset", "liability"]),
+        not(taccounts.isInvestment),
       ),
     );
   return (
@@ -102,3 +109,26 @@ export const getIncomeExpense = query(async () => {
       ) / 100,
   };
 }, "getIncomeExpense");
+
+export const getInvestments = query(async () => {
+  "use server";
+  const session = await assertSession();
+  const data = await db
+    .select()
+    .from(investments)
+    .where(eq(investments.userId, session.user.id))
+    .orderBy(desc(investments.date));
+  return data;
+}, "getInvestments");
+
+export const getStockPrice = query(async (ticker: string) => {
+  "use server";
+  await assertSession();
+  const data = await db
+    .select()
+    .from(stockPrices)
+    .where(eq(stockPrices.ticker, ticker))
+    .orderBy(desc(stockPrices.createdAt))
+    .limit(1);
+  return data[0];
+}, "getStockPrice");
