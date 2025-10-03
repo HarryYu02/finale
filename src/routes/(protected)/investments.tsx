@@ -10,6 +10,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { getInvestments, getStockPrice } from "@/server";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const InvestmentOverview: Component<{
   ticker: string;
@@ -21,24 +29,24 @@ const InvestmentOverview: Component<{
   });
   const stockPrice = () => (stockInfo()?.price ?? 0) / 100;
   return (
-    <div class="flex gap-4">
-      <span>{props.ticker}</span>
-      <span>{props.totalShares.toFixed(2)}</span>
-      <span>{props.totalCost.toFixed(2)}</span>
-      <span>{(props.totalCost / props.totalShares).toFixed(2)}</span>
-      <span>{(stockPrice() * props.totalShares).toFixed(2)}</span>
-      <span>{stockPrice().toFixed(2)}</span>
-      <span>
+    <TableRow class="">
+      <TableCell>{props.ticker}</TableCell>
+      <TableCell>{props.totalShares.toFixed(2)}</TableCell>
+      <TableCell>{props.totalCost.toFixed(2)}</TableCell>
+      <TableCell>{(props.totalCost / props.totalShares).toFixed(2)}</TableCell>
+      <TableCell>{(stockPrice() * props.totalShares).toFixed(2)}</TableCell>
+      <TableCell>{stockPrice().toFixed(2)}</TableCell>
+      <TableCell>
         {(stockPrice() * props.totalShares - props.totalCost).toFixed(2)}
-      </span>
-      <span>
+      </TableCell>
+      <TableCell>
         {`${(
           ((stockPrice() * props.totalShares - props.totalCost) /
             props.totalCost) *
             100
         ).toFixed(2)}%`}
-      </span>
-    </div>
+      </TableCell>
+    </TableRow>
   );
 };
 
@@ -62,7 +70,7 @@ const Investments: Component = () => {
   };
 
   return (
-    <div class="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+    <div class="mx-auto flex flex-col gap-6 py-6">
       <Dialog>
         <DialogTrigger as={Button} class="mx-auto max-w-md">
           + Add investment
@@ -74,30 +82,61 @@ const Investments: Component = () => {
           <AddInvestmentForm />
         </DialogContent>
       </Dialog>
-      <For each={investmentsOverview()}>
-        {(item) => (
-          <InvestmentOverview
-            ticker={item[0]}
-            totalShares={item[1].totalShares}
-            totalCost={item[1].totalCost}
-          />
-        )}
-      </For>
-      <For each={investments()}>
-        {(investment) => {
-          const cost = () =>
-            (investment.price / 10000) * (investment.share / 10000);
-          return (
-            <div class="flex gap-4">
-              <span>{investment.date.toLocaleDateString()}</span>
-              <span>{investment.ticker}</span>
-              <span>{(investment.price / 10000).toFixed(4)}</span>
-              <span>{(investment.share / 10000).toFixed(4)}</span>
-              <span>{cost().toFixed(2)}</span>
-            </div>
-          );
-        }}
-      </For>
+      <Table class="w-fit">
+        <TableHeader>
+          <TableRow>
+            <TableHead class="">Ticker</TableHead>
+            <TableHead class="">Total shares</TableHead>
+            <TableHead class="">Book cost</TableHead>
+            <TableHead class="">Average price</TableHead>
+            <TableHead class="">Book value</TableHead>
+            <TableHead class="">Current price</TableHead>
+            <TableHead class="">Net change</TableHead>
+            <TableHead class="">Net change %</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <For each={investmentsOverview()}>
+            {(item) => (
+              <InvestmentOverview
+                ticker={item[0]}
+                totalShares={item[1].totalShares}
+                totalCost={item[1].totalCost}
+              />
+            )}
+          </For>
+        </TableBody>
+      </Table>
+      <Table class="mx-auto max-w-lg">
+        <TableHeader>
+          <TableRow>
+            <TableHead class="">Date</TableHead>
+            <TableHead class="">Ticker</TableHead>
+            <TableHead class="">Price</TableHead>
+            <TableHead class="">Share</TableHead>
+            <TableHead class="">Cost</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <For each={investments()}>
+            {(investment) => {
+              const cost = () =>
+                (investment.price / 10000) * (investment.share / 10000);
+              return (
+                <TableRow class="">
+                  <TableCell>{investment.date.toLocaleDateString()}</TableCell>
+                  <TableCell>{investment.ticker}</TableCell>
+                  <TableCell>
+                    ${(investment.price / 10000).toFixed(4)}
+                  </TableCell>
+                  <TableCell>{(investment.share / 10000).toFixed(4)}</TableCell>
+                  <TableCell>${cost().toFixed(2)}</TableCell>
+                </TableRow>
+              );
+            }}
+          </For>
+        </TableBody>
+      </Table>
     </div>
   );
 };
