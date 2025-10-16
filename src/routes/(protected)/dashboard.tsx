@@ -1,5 +1,5 @@
 import { createAsync } from "@solidjs/router";
-import { type Component, createMemo } from "solid-js";
+import { type Component, createMemo, For } from "solid-js";
 import {
   Card,
   CardDescription,
@@ -7,11 +7,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getIncomeExpense, getNetWorth } from "@/server";
+import { PieChart } from "@/components/ui/charts";
+import { getExpenseByAccount, getIncomeExpense, getNetWorth } from "@/server";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const Dashboard: Component = () => {
   const netWorth = createAsync(() => getNetWorth());
   const incomeExpense = createAsync(() => getIncomeExpense());
+  const expenses = createAsync(() => getExpenseByAccount());
+
+  const expensesData = () => ({
+    labels: expenses()?.map((category) => category.name) ?? [],
+    datasets: [
+      {
+        data:
+          expenses()?.map((category) => Number(category.sum ?? 0) / 100) ?? [],
+      },
+    ],
+  });
 
   const cashFlow = createMemo(() => {
     if (!incomeExpense()) return;
@@ -80,7 +100,41 @@ const Dashboard: Component = () => {
           </CardFooter>
         </Card>
       </div>
-      <div class="px-4 lg:px-6"></div>
+      <div class="grid grid-cols-4 px-4">
+        <Card class="@container/card col-span-2">
+          <CardHeader>
+            <CardDescription>Expense by category</CardDescription>
+            <CardTitle class="font-semibold @[250px]/card:text-3xl text-2xl tabular-nums">
+              {formatDollar(incomeExpense()?.expense)}
+            </CardTitle>
+          </CardHeader>
+          <div class="flex h-[250px] items-center gap-4 p-6 pt-0">
+            <div class="size-[200px]">
+              <PieChart data={expensesData()} />
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead class="">Category</TableHead>
+                  <TableHead class="">Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody class="overflow-auto">
+                <For each={expenses()}>
+                  {(expense) => (
+                    <TableRow>
+                      <TableCell class="">{expense.name}</TableCell>
+                      <TableCell class="">
+                        ${Number(expense.sum ?? 0) / 100}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </For>
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };

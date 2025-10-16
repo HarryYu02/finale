@@ -1,4 +1,5 @@
 import { createAsync, useAction } from "@solidjs/router";
+import Copy from "lucide-solid/icons/copy";
 import More from "lucide-solid/icons/ellipsis-vertical";
 import Edit from "lucide-solid/icons/pencil";
 import Trash from "lucide-solid/icons/trash-2";
@@ -155,6 +156,11 @@ const Transactions: Component = () => {
                             <More />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
+                            {/* TODO: Duplicate transaction */}
+                            <DropdownMenuItem onClick={async () => {}}>
+                              <Copy size={16} />
+                              Duplicate
+                            </DropdownMenuItem>
                             {/* TODO: Edit transaction */}
                             <DropdownMenuItem onClick={async () => {}}>
                               <Edit size={16} />

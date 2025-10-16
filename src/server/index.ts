@@ -1,5 +1,5 @@
 import { query, redirect } from "@solidjs/router";
-import { and, desc, eq, inArray, not, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, not, sql, sum } from "drizzle-orm";
 import { getRequestEvent } from "solid-js/web";
 import { db } from "@/db";
 import {
@@ -44,6 +44,34 @@ export const getEntries = query(async () => {
     .orderBy(desc(entries.side), desc(transactions.createdAt));
   return allEntries;
 }, "getEntries");
+
+export const getExpenseByAccount = query(async () => {
+  "use server";
+  const session = await assertSession();
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+
+  const expenseByAccountInMonth = await db
+    .select({
+      name: taccounts.name,
+      sum: sum(entries.amount),
+    })
+    .from(entries)
+    .leftJoin(taccounts, eq(entries.taccountId, taccounts.id))
+    .leftJoin(transactions, eq(entries.transactionId, transactions.id))
+    .where(
+      and(
+        eq(taccounts.userId, session.user.id),
+        sql`cast(strftime('%Y', ${transactions.date}, 'unixepoch') as integer) = ${year}`,
+        sql`cast(strftime('%m', ${transactions.date}, 'unixepoch') as integer) = ${month}`,
+        eq(taccounts.type, "expense"),
+      ),
+    )
+    .groupBy(taccounts.name);
+
+  return expenseByAccountInMonth;
+}, "getExpenseByAccount");
 
 export const getIncomeExpense = query(async () => {
   "use server";
