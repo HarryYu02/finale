@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PieChart } from "@/components/ui/charts";
-import { getExpenseByAccount, getIncomeExpense, getNetWorth } from "@/server";
 import {
   Table,
   TableBody,
@@ -17,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getExpenseByAccount, getIncomeExpense, getNetWorth } from "@/server";
 
 const Dashboard: Component = () => {
   const netWorth = createAsync(() => getNetWorth());
@@ -100,7 +100,7 @@ const Dashboard: Component = () => {
           </CardFooter>
         </Card>
       </div>
-      <div class="grid grid-cols-4 px-4">
+      <div class="grid grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:grid-cols-4">
         <Card class="@container/card col-span-2">
           <CardHeader>
             <CardDescription>Expense by category</CardDescription>
@@ -108,30 +108,32 @@ const Dashboard: Component = () => {
               {formatDollar(incomeExpense()?.expense)}
             </CardTitle>
           </CardHeader>
-          <div class="flex h-[250px] items-center gap-4 p-6 pt-0">
+          <div class="flex flex-col items-center gap-4 p-6 pt-0 md:flex-row">
             <div class="size-[200px]">
               <PieChart data={expensesData()} />
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead class="">Category</TableHead>
-                  <TableHead class="">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody class="overflow-auto">
-                <For each={expenses()}>
-                  {(expense) => (
-                    <TableRow>
-                      <TableCell class="">{expense.name}</TableCell>
-                      <TableCell class="">
-                        ${Number(expense.sum ?? 0) / 100}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </For>
-              </TableBody>
-            </Table>
+            <div class="h-[200px] w-full overflow-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead class="">Category</TableHead>
+                    <TableHead class="">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody class="overflow-auto">
+                  <For each={expenses()}>
+                    {(expense) => (
+                      <TableRow>
+                        <TableCell class="">{expense.name}</TableCell>
+                        <TableCell class="">
+                          ${Number(expense.sum ?? 0) / 100}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </For>
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </Card>
       </div>

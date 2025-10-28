@@ -9,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getInvestments, getStockPrice } from "@/server";
 import {
   Table,
   TableBody,
@@ -18,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getInvestments, getStockPrice } from "@/server";
 
 const InvestmentOverview: Component<{
   ticker: string;
