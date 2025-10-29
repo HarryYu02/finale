@@ -55,7 +55,7 @@ export const getExpenseByAccount = query(async () => {
   const expenseByAccountInMonth = await db
     .select({
       name: taccounts.name,
-      sum: sum(entries.amount),
+      sum: sql`sum(iif(entries.side = taccounts.normal_side, entries.amount, -entries.amount))`,
     })
     .from(entries)
     .leftJoin(taccounts, eq(entries.taccountId, taccounts.id))
