@@ -1,5 +1,5 @@
 import { createAsync } from "@solidjs/router";
-import { type Component, createMemo, For } from "solid-js";
+import { type Component, createMemo, createSignal, For } from "solid-js";
 import {
   Card,
   CardDescription,
@@ -19,9 +19,17 @@ import {
 import { getExpenseByAccount, getIncomeExpense, getNetWorth } from "@/server";
 
 const Dashboard: Component = () => {
+  const [viewYear, _setViewYear] = createSignal(new Date().getFullYear());
+  const [viewMonth, _setViewMonth] = createSignal(new Date().getMonth() + 1);
+
+  const shortMonth = () =>
+    new Date(0, viewMonth() - 1).toLocaleString("en-US", { month: "short" });
+
   const netWorth = createAsync(() => getNetWorth());
   const incomeExpense = createAsync(() => getIncomeExpense());
-  const expenses = createAsync(() => getExpenseByAccount());
+  const expenses = createAsync(() =>
+    getExpenseByAccount(viewYear(), viewMonth()),
+  );
 
   const expensesData = () => ({
     labels: expenses()?.map((category) => category.name) ?? [],
@@ -57,6 +65,17 @@ const Dashboard: Component = () => {
       <div class="grid grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:grid-cols-4">
         <Card class="@container/card">
           <CardHeader>
+            <CardDescription>Viewing</CardDescription>
+            <CardTitle class="font-semibold @[250px]/card:text-3xl text-2xl tabular-nums">
+              {shortMonth()} {viewYear()}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter class="flex-col items-start gap-1.5 text-sm">
+            <div class="text-muted-foreground">Date range</div>
+          </CardFooter>
+        </Card>
+        <Card class="@container/card">
+          <CardHeader>
             <CardDescription>Net Worth</CardDescription>
             <CardTitle class="font-semibold @[250px]/card:text-3xl text-2xl tabular-nums">
               {formatDollar(netWorth())}
@@ -75,17 +94,6 @@ const Dashboard: Component = () => {
           </CardHeader>
           <CardFooter class="flex-col items-start gap-1.5 text-sm">
             <div class="text-muted-foreground">Income - Expense</div>
-          </CardFooter>
-        </Card>
-        <Card class="@container/card">
-          <CardHeader>
-            <CardDescription>Expense</CardDescription>
-            <CardTitle class="font-semibold @[250px]/card:text-3xl text-2xl tabular-nums">
-              {formatDollar(incomeExpense()?.expense)}
-            </CardTitle>
-          </CardHeader>
-          <CardFooter class="flex-col items-start gap-1.5 text-sm">
-            <div class="text-muted-foreground">Expense per account</div>
           </CardFooter>
         </Card>
         <Card class="@container/card">

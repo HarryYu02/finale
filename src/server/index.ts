@@ -1,5 +1,5 @@
 import { query, redirect } from "@solidjs/router";
-import { and, desc, eq, inArray, not, sql, sum } from "drizzle-orm";
+import { and, desc, eq, inArray, not, sql } from "drizzle-orm";
 import { getRequestEvent } from "solid-js/web";
 import { db } from "@/db";
 import {
@@ -45,33 +45,36 @@ export const getEntries = query(async () => {
   return allEntries;
 }, "getEntries");
 
-export const getExpenseByAccount = query(async () => {
-  "use server";
-  const session = await assertSession();
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1;
+export const getExpenseByAccount = query(
+  async (year?: number, month?: number) => {
+    "use server";
+    const session = await assertSession();
+    const today = new Date();
+    const _year = year || today.getFullYear();
+    const _month = month || today.getMonth() + 1;
 
-  const expenseByAccountInMonth = await db
-    .select({
-      name: taccounts.name,
-      sum: sql`sum(iif(entries.side = taccounts.normal_side, entries.amount, -entries.amount))`,
-    })
-    .from(entries)
-    .leftJoin(taccounts, eq(entries.taccountId, taccounts.id))
-    .leftJoin(transactions, eq(entries.transactionId, transactions.id))
-    .where(
-      and(
-        eq(taccounts.userId, session.user.id),
-        sql`cast(strftime('%Y', ${transactions.date}, 'unixepoch') as integer) = ${year}`,
-        sql`cast(strftime('%m', ${transactions.date}, 'unixepoch') as integer) = ${month}`,
-        eq(taccounts.type, "expense"),
-      ),
-    )
-    .groupBy(taccounts.name);
+    const expenseByAccountInMonth = await db
+      .select({
+        name: taccounts.name,
+        sum: sql`sum(iif(entries.side = taccounts.normal_side, entries.amount, -entries.amount))`,
+      })
+      .from(entries)
+      .leftJoin(taccounts, eq(entries.taccountId, taccounts.id))
+      .leftJoin(transactions, eq(entries.transactionId, transactions.id))
+      .where(
+        and(
+          eq(taccounts.userId, session.user.id),
+          sql`cast(strftime('%Y', ${transactions.date}, 'unixepoch') as integer) = ${_year}`,
+          sql`cast(strftime('%m', ${transactions.date}, 'unixepoch') as integer) = ${_month}`,
+          eq(taccounts.type, "expense"),
+        ),
+      )
+      .groupBy(taccounts.name);
 
-  return expenseByAccountInMonth;
-}, "getExpenseByAccount");
+    return expenseByAccountInMonth;
+  },
+  "getExpenseByAccount",
+);
 
 export const getIncomeExpense = query(async () => {
   "use server";

@@ -7,21 +7,21 @@ import { investments } from "@/db/schema";
 import { addInvestment } from "@/server/actions";
 import { Button } from "./ui/button";
 import {
+  NumberField,
+  NumberFieldDecrementTrigger,
+  NumberFieldErrorMessage,
+  NumberFieldGroup,
+  NumberFieldIncrementTrigger,
+  NumberFieldInput,
+  NumberFieldLabel,
+} from "./ui/number-field";
+import {
   TextField,
   TextFieldErrorMessage,
   TextFieldInput,
   TextFieldLabel,
 } from "./ui/text-field";
 import { showToast } from "./ui/toast";
-import {
-  NumberField,
-  NumberFieldDecrementTrigger,
-  NumberFieldGroup,
-  NumberFieldIncrementTrigger,
-  NumberFieldInput,
-  NumberFieldLabel,
-  NumberFieldErrorMessage,
-} from "./ui/number-field";
 
 const investmentInsertSchema = createInsertSchema(investments)
   .extend({
